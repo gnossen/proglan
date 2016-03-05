@@ -1,0 +1,59 @@
+# Sample "Hello World":
+
+def main() {
+    let hello = "Hello"
+    let world = "World"
+    print(hello + " " + world)
+}
+
+# Sample Fibonacci (iterative):
+
+def main() {
+    let prev = 0
+    let cur = 1
+    for(i in range(10)) {
+        print(cur)
+        let tmp = cur
+        cur = prev + cur 
+        prev = tmp
+    }
+}
+
+def main() {
+    let prev = 0
+    let cur = 1
+    let i = 0
+    while (i < 10) {
+        print(cur)
+        let tmp = cur
+        cur = prev + cur
+        prev = tmp
+        i = i + 1
+    }
+}
+
+def add2(a) {
+    a + 2
+}
+
+def multn(n) {
+    lambda(x) { x*n }
+}
+
+def get(url, handler) {
+    # hook the handler up to the http server
+}
+
+get("/") {
+    "Some html."
+}
+
+def annotate(f, f_name) {
+    lambda() {
+        print("Executing " + f_name ".\n")
+        f()
+        print("Finishing " + f_name ".\n")
+    }
+}
+
+annotate(main, "fib")()

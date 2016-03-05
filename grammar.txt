@@ -1,0 +1,61 @@
+functionDefinition : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optStatementList CBRACE
+
+optParamList : EPSILON
+             | paramList
+
+paramList : IDENTIFIER
+          | IDENTIFIER COMMA paramList
+
+optStatementList : EPSILON
+                 | statementList
+
+statementList : statement
+              | statement statementList
+
+statement : expression
+
+expression : variableDeclaration
+           | variableAssignment
+           | ifStatement
+           | whileStatement
+           | primary
+           | primary operator expression
+           | functionCall
+           | OPAREN expression CPAREN
+           | anonymousFunction
+           | functionDefinition
+
+variableDeclaration : LET IDENTIFIER
+                    | LET IDENTIFIER EQUALS expression
+
+variableAssignment : IDENTIFIER EQUAL expression
+
+ifStatement : IF OPAREN expression CPAREN OBRACE statementList CBRACE optElse
+
+optElse : EPSILON
+        | ELSE ifStatement
+        | ELSE OBRACE statementList CBRACE
+
+whileStatement : WHILE OPAREN expression CPAREN OBRACE statementList CBRACE
+
+primary : NUMBER
+        | STRING
+        | IDENTIFIER 
+
+operator : PLUS
+         | MINUS
+         | TIMES
+         | DIVIDE
+
+functionCall : IDENTIFIER OPAREN optArgList CPAREN
+             | higherOrderFunctionCall
+
+higherOrderFunctionCall : IDENTIFIER OPAREN optArgList CPAREN OBRACE statementList CBRACE
+
+optArgList : EPSILON
+           | argList
+
+argList : IDENTIFIER
+        | IDENTIFIER argList
+
+anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optStatementList CBRACE
