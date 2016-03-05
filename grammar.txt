@@ -26,7 +26,7 @@ expression : variableDeclaration
            | functionDefinition
 
 variableDeclaration : LET IDENTIFIER
-                    | LET IDENTIFIER EQUALS expression
+                    | LET IDENTIFIER EQUAL expression
 
 variableAssignment : IDENTIFIER EQUAL expression
 
@@ -46,6 +46,9 @@ operator : PLUS
          | MINUS
          | TIMES
          | DIVIDE
+         | DOUBLE_EQUAL
+         | GREATER_THAN
+         | LESS_THAN
 
 functionCall : IDENTIFIER OPAREN optArgList CPAREN
              | higherOrderFunctionCall
