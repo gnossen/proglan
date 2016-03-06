@@ -26,7 +26,7 @@ def test_example1():
                     Lexeme(Lexeme.EOF, line=3, col=0)
                ]
 
-    actual = Scanner(file="examples/example1.prog").scan()
+    actual = Scanner(file="../examples/example1.prog").scan()
     assert match_lexemes(actual, expected)
 
 def test_example2():
@@ -58,5 +58,5 @@ def test_example2():
                 Lexeme(Lexeme.EOF, line=6, col=0)
                ]
 
-    actual = Scanner(file="examples/example2.prog").scan()
+    actual = Scanner(file="../examples/example2.prog").scan()
     assert match_lexemes(actual, expected)

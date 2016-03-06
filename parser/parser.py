@@ -29,8 +29,14 @@ class Parser:
         else:
             return None
 
-    def check(self, lexeme_type):
-        return self.current().type == lexeme_type
+    def check(self, lexeme_type, offset=None):
+        if offset is None:
+            return self.current().type == lexeme_type
+        else:
+            if len(self.input) < (offset + 1):
+                return False
+            else:
+                return self.input[offset].type == lexeme_type
 
     def match(self, lexeme_type):
         if not self.check(lexeme_type):
@@ -112,10 +118,10 @@ class Parser:
             expr = self.parse_expr()
             self.match(Lexeme.CPAREN)
             return expr
-        elif self.primExpr_pending():
-            return self.parse_primExpr()
-        else:
+        elif self.identExpr_pending():
             return self.parse_identExpr()
+        else:
+            return self.parse_primExpr()
 
     def varDecl_pending(self):
         return self.check(Lexeme.LET)
@@ -175,7 +181,7 @@ class Parser:
         expr_list = self.parse_exprList()
         self.match(Lexeme.CBRACE)
 
-        return self.make_whileExpr(condition, expr_list)
+        return make_whileExpr(condition, expr_list)
 
     def anonFunc_pending(self):
         return self.check(Lexeme.LAMBDA)
@@ -222,7 +228,9 @@ class Parser:
     def primary_pending(self):
         return self.check(Lexeme.NUMBER) or \
                 self.check(Lexeme.STRING) or \
-                self.check(Lexeme.IDENTIFIER)
+                (self.check(Lexeme.IDENTIFIER) and \
+                 not self.check(Lexeme.EQUAL, offset=1) and \
+                 not self.check(Lexeme.OPAREN, offset=1))
     
     def parse_primary(self):
         if self.check(Lexeme.NUMBER):
@@ -258,7 +266,9 @@ class Parser:
             return self.match(Lexeme.LESS_THAN)
 
     def identExpr_pending(self):
-        return self.check(Lexeme.IDENTIFIER)
+        return self.check(Lexeme.IDENTIFIER) and \
+                (self.check(Lexeme.EQUAL, offset=1) or \
+                 self.check(Lexeme.OPAREN, offset=1))
 
     def parse_identExpr(self):
         identifier = self.match(Lexeme.IDENTIFIER) 
@@ -296,10 +306,10 @@ class Parser:
             return make_argList(None, None)
 
     def argList_pending(self):
-        return self.check(Lexeme.IDENTIFIER)
+        return self.expr_pending()
 
     def parse_argList(self):
-        arg = self.match(Lexeme.IDENTIFIER)
+        arg = self.parse_expr()
         
         sublist = None
         if self.check(Lexeme.COMMA):
@@ -318,42 +328,54 @@ class Parser:
         return expr_list
 
 def make_funcDef(func_name, param_list, expr_list):
+    # print("Making func def!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=param_list, right=expr_list)
     return Lexeme(Lexeme.funcDef, left=func_name, right=gen_purp)
 
 def make_paramList(param, sublist):
+    # print("Making param list!")
     return Lexeme(Lexeme.paramList, left=param, right=sublist)
 
 def make_argList(arg, sublist):
+    # print("Making arg list!")
     return Lexeme(Lexeme.argList, left=arg, right=sublist)
 
 def make_exprList(expr, sublist):
+    # print("Making expr list!")
     return Lexeme(Lexeme.exprList, left=expr, right=sublist)
 
 def make_varDecl(var_name, value):
+    # print("Making var decl!")
     return Lexeme(Lexeme.varDecl, left=var_name, right=value)
 
 def make_ifExpr(condition, body, else_clause):
+    # print("Making if expr!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=body, right=else_clause)
     if_statement = Lexeme(Lexeme.ifExpr, left=condition, right=gen_purp)
     return if_statement
 
 def make_elseExpr(body, if_expr):
+    # print("Making else expr!")
     return Lexeme(Lexeme.elseExpr, left=body, right=if_expr)
 
 def make_whileExpr(condition, expr_list):
+    # print("Making while expr!")
     return Lexeme(Lexeme.whileExpr, left=condition, right=expr_list)
 
 def make_primExpr(prim, op, expr):
+    # print("Making prim expr!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=op, right=expr)
     return Lexeme(Lexeme.primExpr, left=prim, right=gen_purp)
 
 def make_funcCall(func_name, arg_list, anon_arg):
+    # print("Making func call!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=arg_list, right=anon_arg)
     return Lexeme(Lexeme.funcCall, left=func_name, right=gen_purp)
 
 def make_anonFunc(param_list, body):
+    # print("Making anon func!")
     return Lexeme(Lexeme.anonFunc, left=param_list, right=body)
 
 def make_varAssign(var_name, value):
+    # print("Making car assign!")
     return Lexeme(Lexeme.varAssign, left=var_name, right=value)
