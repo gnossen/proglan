@@ -79,6 +79,9 @@ class Lexer:
         elif ch.isdigit():
             number = self.lex_number(ch)
             return Lexeme(Lexeme.NUMBER, value=int(number), line=self.line, col=self.col - len(number))
+        elif ch == '"':
+            string = self.lex_string("")
+            return Lexeme(Lexeme.STRING, value=string, line=self.line, col=self.col - len(string) - 2)
         else:
             raise Exception("Illegal character '%s'." % ch)
         
@@ -110,3 +113,14 @@ class Lexer:
            return self.lex_number(head + ch)
        else:
            return head
+
+    def lex_string(self, head):
+        ch = self.peek()
+        if ch is None:
+            raise Exception("Encountered EOF before end of string.")
+        elif ch != '"':
+            self.advance()
+            return self.lex_string(head + ch)
+        else:
+            self.advance()
+            return head

@@ -28,3 +28,35 @@ def test_example1():
 
     actual = Scanner(file="examples/example1.prog").scan()
     assert match_lexemes(actual, expected)
+
+def test_example2():
+    expected = [
+                Lexeme(Lexeme.DEF, line=0, col=0),
+                Lexeme(Lexeme.IDENTIFIER, value="printHello", line=0, col=4),
+                Lexeme(Lexeme.OPAREN, line=0, col=14),
+                Lexeme(Lexeme.CPAREN, line=0, col=15),
+                Lexeme(Lexeme.OBRACE, line=0, col=17),
+                Lexeme(Lexeme.LET, line=1, col=4),
+                Lexeme(Lexeme.IDENTIFIER, value="hello", line=1, col=8),
+                Lexeme(Lexeme.EQUAL, line=1, col=14),
+                Lexeme(Lexeme.STRING, value="Hello", line=1, col=16),
+                Lexeme(Lexeme.LET, line=2, col=4),
+                Lexeme(Lexeme.IDENTIFIER, value="world", line=2, col=8),
+                Lexeme(Lexeme.EQUAL, line=2, col=14),
+                Lexeme(Lexeme.STRING, value="world", line=2, col=16),
+                Lexeme(Lexeme.IDENTIFIER, value="print", line=3, col=4),
+                Lexeme(Lexeme.OPAREN, line=3, col=9),
+                Lexeme(Lexeme.IDENTIFIER, value="hello", line=3, col=10),
+                Lexeme(Lexeme.PLUS, line=3, col=16),
+                Lexeme(Lexeme.STRING, value=" ", line=3, col=18),
+                Lexeme(Lexeme.PLUS, line=3, col=22),
+                Lexeme(Lexeme.IDENTIFIER, value="world", line=3, col=24),
+                Lexeme(Lexeme.PLUS, line=3, col=30),
+                Lexeme(Lexeme.STRING, value="!", line=3, col=32),
+                Lexeme(Lexeme.CPAREN, line=3, col=35),
+                Lexeme(Lexeme.CBRACE, line=4, col=0),
+                Lexeme(Lexeme.EOF, line=5, col=0)
+               ]
+
+    actual = Scanner(file="examples/example2.prog").scan()
+    assert match_lexemes(actual, expected)

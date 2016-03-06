@@ -76,3 +76,7 @@ def test_identifiers():
 def test_numbers():
     lex = Lexer("12345")
     assert lex.lex() == Lexeme(Lexeme.NUMBER, value=12345)
+
+def test_string():
+    lex = Lexer("\"Hello world!\"")
+    assert lex.lex() == Lexeme(Lexeme.STRING, value="Hello world!")
