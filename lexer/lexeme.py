@@ -53,7 +53,7 @@ def match_lexemes(A, B):
     if len(A) != len(B):
         return False
 
-    for a, b in izip(A, B):
+    for a, b in zip(A, B):
        if a != b:
            return False
 

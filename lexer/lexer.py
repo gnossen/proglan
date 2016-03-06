@@ -68,6 +68,8 @@ class Lexer:
                 return Lexeme(Lexeme.LAMBDA)
             else: 
                 return Lexeme(Lexeme.IDENTIFIER, value=word)
+        else:
+            raise Exception("Illegal character '%s'." % ch)
         
     def skip_whitespace(self):
         char = self.peek()
@@ -84,7 +86,7 @@ class Lexer:
 
     def lex_word(self, head):
         ch = self.peek()
-        if ch in self.word_chars:
+        if ch is not None and ch in self.word_chars:
             self.advance()
             return self.lex_word(head + ch)
         else:

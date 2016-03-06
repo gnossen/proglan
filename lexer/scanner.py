@@ -1,14 +1,19 @@
+import os
 from lexer import *
 
 class Scanner:
-    def __init__(self, input=None):
+    def __init__(self, input=None, file=None):
         if input is not None:
             self.load_str(input)
+        elif file is not None:
+            self.load_file(file)
         else:
             self.input = None
 
     def load_file(self, filename):
-        with open(filename, 'r') as f:
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(cur_dir, filename)
+        with open(filepath, 'r') as f:
             self.input = f.read()
 
     def load_str(self, str):
@@ -39,5 +44,3 @@ class Scanner:
 
         return s
 
-scanner = Scanner("def fun(a, b, c) { a+b }")
-print scanner
