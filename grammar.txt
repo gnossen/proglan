@@ -1,4 +1,4 @@
-functionDefinition : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optStatementList CBRACE
+functionDefinition : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
 
 optParamList : EPSILON
              | paramList
@@ -6,37 +6,40 @@ optParamList : EPSILON
 paramList : IDENTIFIER
           | IDENTIFIER COMMA paramList
 
-optStatementList : EPSILON
-                 | statementList
+optExpressionList : EPSILON
+                 | expressionList
 
-statementList : statement
-              | statement statementList
-
-statement : expression
+expressionList : expression
+              | expression expressionList
 
 expression : variableDeclaration
-           | variableAssignment
            | ifStatement
            | whileStatement
-           | primary
-           | primary operator expression
-           | functionCall
            | OPAREN expression CPAREN
            | anonymousFunction
            | functionDefinition
+           | identExpr
+           | primExpr
+
+identExpr : varAssign
+          | functionCall
+          | hoFuncCall
+
+primExpr : primary
+         | primary OPERATOR expr
 
 variableDeclaration : LET IDENTIFIER
                     | LET IDENTIFIER EQUAL expression
 
 variableAssignment : IDENTIFIER EQUAL expression
 
-ifStatement : IF OPAREN expression CPAREN OBRACE statementList CBRACE optElse
+ifStatement : IF OPAREN expression CPAREN OBRACE expressionList CBRACE optElse
 
 optElse : EPSILON
         | ELSE ifStatement
-        | ELSE OBRACE statementList CBRACE
+        | ELSE OBRACE expressionList CBRACE
 
-whileStatement : WHILE OPAREN expression CPAREN OBRACE statementList CBRACE
+whileStatement : WHILE OPAREN expression CPAREN OBRACE expressionList CBRACE
 
 primary : NUMBER
         | STRING
@@ -50,10 +53,10 @@ operator : PLUS
          | GREATER_THAN
          | LESS_THAN
 
-functionCall : IDENTIFIER OPAREN optArgList CPAREN
-             | higherOrderFunctionCall
+functionCall : IDENTIFIER OPAREN optArgList CPAREN optAnonArg
 
-higherOrderFunctionCall : IDENTIFIER OPAREN optArgList CPAREN OBRACE statementList CBRACE
+optAnonArg : EPSILON
+           | OBRACE expressionList CBRACE
 
 optArgList : EPSILON
            | argList
@@ -61,4 +64,4 @@ optArgList : EPSILON
 argList : IDENTIFIER
         | IDENTIFIER argList
 
-anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optStatementList CBRACE
+anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE

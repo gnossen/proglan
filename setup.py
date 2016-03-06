@@ -5,5 +5,5 @@ setup(name='proglan',
       description='CS403 Designer Programming Language',
       author='Richard Belleville',
       author_email='rjbelleville@crimson.ua.edu',
-      py_modules=['lexer']
+      py_modules=['lexer', 'parser']
       )
