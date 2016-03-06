@@ -25,9 +25,11 @@ class Lexeme:
     GREATER_THAN =  20
     LESS_THAN =     21
 
-    def __init__(self, ltype, value=None): 
+    def __init__(self, ltype, value=None, line=None, col=None): 
         self.type = ltype 
         self.value = value
+        self.line = line
+        self.col = col
 
     def is_type(self, ltype):
         return self.type == ltype
@@ -35,10 +37,17 @@ class Lexeme:
     def __str__(self):
         try:
             type_str = [key for key, value in Lexeme.__dict__.items() if value == self.type][0]
-            if self.value is not None:
-                return "%s: %s" % (type_str, str(self.value))
+            if self.line is not None and self.col is not None:
+                if self.value is not None:
+                    return "%s: %s (%d, %d)" % (type_str, str(self.value), self.line + 1, self.col + 1)
+                else:
+                    return "%s (%d, %d)" % (type_str, self.line + 1, self.col + 1)
             else:
-                return "%s" % type_str
+                if self.value is not None:
+                    return "%s: %s" % (type_str, str(self.value))
+                else:
+                    return "%s" % type_str
+
 
         except:
             raise Exception("Tried to print lexeme of unknown type id: %d." % self.type)
@@ -54,7 +63,7 @@ def match_lexemes(A, B):
         return False
 
     for a, b in zip(A, B):
-       if a != b:
+       if a != b or a.line != b.line or a.col != b.col:
            return False
 
     return True

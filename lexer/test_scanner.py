@@ -7,23 +7,23 @@ import os
 
 def test_example1():
     expected = [
-                    Lexeme(Lexeme.DEF),
-                    Lexeme(Lexeme.IDENTIFIER, value="multn"),
-                    Lexeme(Lexeme.OPAREN),
-                    Lexeme(Lexeme.IDENTIFIER, value="n"),
-                    Lexeme(Lexeme.CPAREN),
-                    Lexeme(Lexeme.OBRACE),
-                    Lexeme(Lexeme.LAMBDA),
-                    Lexeme(Lexeme.OPAREN),
-                    Lexeme(Lexeme.IDENTIFIER, value="x"),
-                    Lexeme(Lexeme.CPAREN),
-                    Lexeme(Lexeme.OBRACE),
-                    Lexeme(Lexeme.IDENTIFIER, value="x"),
-                    Lexeme(Lexeme.TIMES),
-                    Lexeme(Lexeme.IDENTIFIER, value="n"),
-                    Lexeme(Lexeme.CBRACE),
-                    Lexeme(Lexeme.CBRACE),
-                    Lexeme(Lexeme.EOF)
+                    Lexeme(Lexeme.DEF, line=0, col=0),
+                    Lexeme(Lexeme.IDENTIFIER, value="multn", line=0, col=4),
+                    Lexeme(Lexeme.OPAREN, line=0, col=9),
+                    Lexeme(Lexeme.IDENTIFIER, value="n", line=0, col=10),
+                    Lexeme(Lexeme.CPAREN, line=0, col=11),
+                    Lexeme(Lexeme.OBRACE, line=0, col=13),
+                    Lexeme(Lexeme.LAMBDA, line=1, col=4),
+                    Lexeme(Lexeme.OPAREN, line=1, col=10),
+                    Lexeme(Lexeme.IDENTIFIER, value="x", line=1, col=11),
+                    Lexeme(Lexeme.CPAREN, line=1, col=12),
+                    Lexeme(Lexeme.OBRACE, line=1, col=14),
+                    Lexeme(Lexeme.IDENTIFIER, value="x", line=1, col=16),
+                    Lexeme(Lexeme.TIMES, line=1, col=17),
+                    Lexeme(Lexeme.IDENTIFIER, value="n", line=1, col=18),
+                    Lexeme(Lexeme.CBRACE, line=1, col=20),
+                    Lexeme(Lexeme.CBRACE, line=2, col=0),
+                    Lexeme(Lexeme.EOF, line=3, col=0)
                ]
 
     actual = Scanner(file="examples/example1.prog").scan()

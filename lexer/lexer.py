@@ -6,6 +6,8 @@ class Lexer:
 
     def __init__(self, input):
         self.input = input
+        self.line = 0
+        self.col = 0
         self.word_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
         self.word_start_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
 
@@ -22,6 +24,12 @@ class Lexer:
 
     def advance(self):
         if len(self.input) != 0:
+            if self.input[0] == '\n':
+                self.line += 1
+                self.col = 0
+            else:
+                self.col += 1
+
             self.input = self.input[1:]
 
     def lex(self):
@@ -29,45 +37,45 @@ class Lexer:
 
         ch = self.read()
         if ch == None:
-            return Lexeme(Lexeme.EOF)
+            return Lexeme(Lexeme.EOF, line=self.line, col=self.col)
         elif ch == "(":
-            return Lexeme(Lexeme.OPAREN)
+            return Lexeme(Lexeme.OPAREN, line=self.line, col=self.col - 1)
         elif ch == ")":
-            return Lexeme(Lexeme.CPAREN)
+            return Lexeme(Lexeme.CPAREN, line=self.line, col=self.col - 1)
         elif ch == "{":
-            return Lexeme(Lexeme.OBRACE)
+            return Lexeme(Lexeme.OBRACE, line=self.line, col=self.col - 1)
         elif ch == "}":
-            return Lexeme(Lexeme.CBRACE)
+            return Lexeme(Lexeme.CBRACE, line=self.line, col=self.col - 1)
         elif ch == ",":
-            return Lexeme(Lexeme.COMMA)
+            return Lexeme(Lexeme.COMMA, line=self.line, col=self.col - 1)
         elif ch == "+":
-            return Lexeme(Lexeme.PLUS)
+            return Lexeme(Lexeme.PLUS, line=self.line, col=self.col - 1)
         elif ch == "-":
-            return Lexeme(Lexeme.MINUS)
+            return Lexeme(Lexeme.MINUS, line=self.line, col=self.col - 1)
         elif ch == "*":
-            return Lexeme(Lexeme.TIMES)
+            return Lexeme(Lexeme.TIMES, line=self.line, col=self.col - 1)
         elif ch == "/":
-            return Lexeme(Lexeme.DIVIDE)
+            return Lexeme(Lexeme.DIVIDE, line=self.line, col=self.col - 1)
         elif ch == ">":
-            return Lexeme(Lexeme.GREATER_THAN)
+            return Lexeme(Lexeme.GREATER_THAN, line=self.line, col=self.col - 1)
         elif ch == "<":
-            return Lexeme(Lexeme.LESS_THAN)
+            return Lexeme(Lexeme.LESS_THAN, line=self.line, col=self.col - 1)
         elif ch == "=":
             return self.lex_equal()
         elif ch in self.word_start_chars:
             word = self.lex_word(ch)
             if word == "def":
-                return Lexeme(Lexeme.DEF)
+                return Lexeme(Lexeme.DEF, line=self.line, col=self.col - 3)
             elif word == "let":
-                return Lexeme(Lexeme.LET)
+                return Lexeme(Lexeme.LET, line=self.line, col=self.col - 3)
             elif word == "if":
-                return Lexeme(Lexeme.IF)
+                return Lexeme(Lexeme.IF, line=self.line, col=self.col - 2)
             elif word == "else":
-                return Lexeme(Lexeme.ELSE)
+                return Lexeme(Lexeme.ELSE, line=self.line, col=self.col - 4)
             elif word == "lambda":
-                return Lexeme(Lexeme.LAMBDA)
+                return Lexeme(Lexeme.LAMBDA, line=self.line, col=self.col - 6)
             else: 
-                return Lexeme(Lexeme.IDENTIFIER, value=word)
+                return Lexeme(Lexeme.IDENTIFIER, value=word, line=self.line, col=self.col - len(word))
         else:
             raise Exception("Illegal character '%s'." % ch)
         
@@ -80,9 +88,9 @@ class Lexer:
     def lex_equal(self):
         if self.peek() == "=":
             self.advance()
-            return Lexeme(Lexeme.DOUBLE_EQUAL)
+            return Lexeme(Lexeme.DOUBLE_EQUAL, line=self.line, col=self.col - 2)
         else:
-            return Lexeme(Lexeme.EQUAL)
+            return Lexeme(Lexeme.EQUAL, line=self.line, col=self.col - 1)
 
     def lex_word(self, head):
         ch = self.peek()
