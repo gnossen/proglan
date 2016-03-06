@@ -1,5 +1,6 @@
 def printHello() {
     let hello = "Hello"
     let world = "world"
+    # this is a comment
     print(hello + " " + world + "!")
 }

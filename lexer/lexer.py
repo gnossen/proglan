@@ -33,7 +33,7 @@ class Lexer:
             self.input = self.input[1:]
 
     def lex(self):
-        self.skip_whitespace()
+        self.skip_inconsequential()
 
         ch = self.read()
         if ch == None:
@@ -83,13 +83,32 @@ class Lexer:
             string = self.lex_string("")
             return Lexeme(Lexeme.STRING, value=string, line=self.line, col=self.col - len(string) - 2)
         else:
-            raise Exception("Illegal character '%s'." % ch)
+            raise Exception("Illegal character '%s' at (%d, %d)." % (ch, self.line + 1, self.col + 1))
+
+    def skip_inconsequential(self):
+        last_line = None
+        last_col = None
+        while last_line != self.line and last_col != self.col:
+            last_line = self.line
+            last_col = self.col
+            self.skip_whitespace()
+            self.skip_comment()
         
     def skip_whitespace(self):
         char = self.peek()
         while char is not None and char.isspace():
             self.advance()
             char = self.peek()
+
+    def skip_comment(self):
+        char = self.peek()
+        if char == "#":
+            while char is not None and char != "\n":
+                self.advance()
+                char = self.peek()
+
+            if char is not None:
+                self.advance()
 
     def lex_equal(self):
         if self.peek() == "=":
