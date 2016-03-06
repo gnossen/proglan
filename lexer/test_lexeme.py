@@ -23,3 +23,9 @@ def test_lexeme_str():
    lex2 = Lexeme(-27)
    with pytest.raises(Exception):
        str(lex2)
+
+def test_unique_ids():
+    for key, value in Lexeme.__dict__.items():
+        for key2, value2 in Lexeme.__dict__.items():
+            if key != key2:
+                assert value != value2

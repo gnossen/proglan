@@ -1,36 +1,54 @@
 # Author: Richard Belleville
 
+import os
 from ..lexer.lexeme import *
+from ..lexer.scanner import *
 
 class Parser:
-    __init__(self, input):
-        self.input = input
+    def __init__(self, input=None, file=None):
+        if input is not None:
+            self.load_str(input)
+        elif file is not None:
+            self.load_file(file)
+        else:
+            self.input = None
+
+    def load_file(self, filename):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(cur_dir, filename)
+        with open(filepath, 'r') as f:
+            self.input = f.read()
+
+    def load_str(self, str):
+        self.input = str
+
 
     def current(self):
-        if len(input) != 0:
+        if len(self.input) != 0:
             return self.input[0]
         else:
             return None
 
     def check(self, lexeme_type):
-        return current.type == lexeme_type
+        return self.current().type == lexeme_type
 
     def match(self, lexeme_type):
-        if not self.check(lexeme):
+        if not self.check(lexeme_type):
             raise Exception("Syntax Error: Invalid token '%s'.", str(self.current()))
         else:
             return self.advance()
 
     def advance(self):
         cur = self.current()
-        if cur != None:
+        if cur is not None:
             self.input = self.input[1:]
             return cur
         else:
             return None
 
     def parse(self):
-        self.parse_optExprList()
+        self.input = Scanner(input=self.input).scan()
+        return self.parse_optExprList()
     
     def parse_optParamList(self):
         if self.paramList_pending():
@@ -52,7 +70,7 @@ class Parser:
         return make_paramList(param, sublist)
 
     def parse_optExprList(self):
-        if self.exprList_pending():
+        if self.expr_pending():
             return self.parse_exprList()
         else:
             return make_exprList(None, None)
@@ -67,16 +85,15 @@ class Parser:
         return make_exprList(expr, sublist)
 
     def expr_pending(self):
-        return self.check(OPAREN) or
-                self.ifExpr_pending() or
-                self.varDecl_pending() or
-                self.funcDef_pending() or
-                self.primary_pending() or
-                self.anonFunc_pending() or
-                self.funcCall_pending() or
-                self.primExpr_pending() or
-                self.identExpr_pending() or
-                self.check(Lexeme.OPAREN) or
+        return self.check(Lexeme.OPAREN) or \
+                self.ifExpr_pending() or \
+                self.varDecl_pending() or \
+                self.funcDef_pending() or \
+                self.primary_pending() or \
+                self.anonFunc_pending() or \
+                self.funcCall_pending() or \
+                self.primExpr_pending() or \
+                self.identExpr_pending() or \
                 self.whileExpr_pending()
 
     def parse_expr(self):
@@ -84,7 +101,7 @@ class Parser:
             return self.parse_varDecl()
         elif self.ifExpr_pending():
             return self.parse_ifExpr()
-        elif self.whileExpr_pending()
+        elif self.whileExpr_pending():
             return self.parse_whileExpr()
         elif self.anonFunc_pending():
             return self.parse_anonFunc()
@@ -161,7 +178,7 @@ class Parser:
         return self.make_whileExpr(condition, expr_list)
 
     def anonFunc_pending(self):
-        return self.check(Lexeme.lambda)
+        return self.check(Lexeme.LAMBDA)
 
     def parse_anonFunc(self):
         self.match(Lexeme.LAMBDA)
@@ -179,7 +196,8 @@ class Parser:
 
     def parse_funcDef(self):
         self.match(Lexeme.DEF)
-        func_name = self.parse_identifier()
+        func_name = self.match(Lexeme.IDENTIFIER)
+        self.match(Lexeme.OPAREN)
         param_list = self.parse_optParamList()
         self.match(Lexeme.CPAREN)
         self.match(Lexeme.OBRACE)
@@ -201,9 +219,9 @@ class Parser:
         else:
             return prim
 
-    def check_primary(self):
-        return self.check(Lexeme.NUMBER) or
-                self.check(Lexeme.STRING) or
+    def primary_pending(self):
+        return self.check(Lexeme.NUMBER) or \
+                self.check(Lexeme.STRING) or \
                 self.check(Lexeme.IDENTIFIER)
     
     def parse_primary(self):
@@ -215,12 +233,12 @@ class Parser:
             return self.match(Lexeme.IDENTIFIER)
 
     def check_operator(self):
-        return self.check(Lexeme.PLUS) or
-                self.check(Lexeme.MINUS) or
-                self.check(Lexeme.TIMES) or
-                self.check(Lexeme.DIVIDE) or
-                self.check(Lexeme.DOUBLE_EQUAL) or
-                self.check(Lexeme.GREATER_THAN) or
+        return self.check(Lexeme.PLUS) or \
+                self.check(Lexeme.MINUS) or \
+                self.check(Lexeme.TIMES) or \
+                self.check(Lexeme.DIVIDE) or \
+                self.check(Lexeme.DOUBLE_EQUAL) or \
+                self.check(Lexeme.GREATER_THAN) or \
                 self.check(Lexeme.LESS_THAN)
 
     def parse_operator(self):
@@ -235,7 +253,7 @@ class Parser:
         elif self.check(Lexeme.DOUBLE_EQUAL):
             return self.match(Lexeme.DOUBLE_EQUAL)
         elif self.check(Lexeme.GREATER_THAN):
-            return self.match(Lexeme.MINUS)
+            return self.match(Lexeme.GREATER_THAN)
         else:
             return self.match(Lexeme.LESS_THAN)
 
@@ -300,9 +318,8 @@ class Parser:
         return expr_list
 
 def make_funcDef(func_name, param_list, expr_list):
-    gen_purp = Lexeme(Lexeme.GEN_PURP, left=param_list, right=expr_list)
-    func_def = Lexeme(Lexeme.funcDef, left=func_name, right=func_def)
-    return func_def
+    gen_purp = Lexeme(Lexeme.gen_purp, left=param_list, right=expr_list)
+    return Lexeme(Lexeme.funcDef, left=func_name, right=gen_purp)
 
 def make_paramList(param, sublist):
     return Lexeme(Lexeme.paramList, left=param, right=sublist)
@@ -311,13 +328,13 @@ def make_argList(arg, sublist):
     return Lexeme(Lexeme.argList, left=arg, right=sublist)
 
 def make_exprList(expr, sublist):
-    return Lexeme(Lexeme.exprList, left=param, right=sublist)
+    return Lexeme(Lexeme.exprList, left=expr, right=sublist)
 
 def make_varDecl(var_name, value):
     return Lexeme(Lexeme.varDecl, left=var_name, right=value)
 
 def make_ifExpr(condition, body, else_clause):
-    gen_purp = Lexeme(Lexeme.GEN_PURP, left=body, right=else_clause)
+    gen_purp = Lexeme(Lexeme.gen_purp, left=body, right=else_clause)
     if_statement = Lexeme(Lexeme.ifExpr, left=condition, right=gen_purp)
     return if_statement
 
@@ -326,6 +343,14 @@ def make_elseExpr(body, if_expr):
 
 def make_whileExpr(condition, expr_list):
     return Lexeme(Lexeme.whileExpr, left=condition, right=expr_list)
+
+def make_primExpr(prim, op, expr):
+    gen_purp = Lexeme(Lexeme.gen_purp, left=op, right=expr)
+    return Lexeme(Lexeme.primExpr, left=prim, right=gen_purp)
+
+def make_funcCall(func_name, arg_list, anon_arg):
+    gen_purp = Lexeme(Lexeme.gen_purp, left=arg_list, right=anon_arg)
+    return Lexeme(Lexeme.funcCall, left=func_name, right=gen_purp)
 
 def make_anonFunc(param_list, body):
     return Lexeme(Lexeme.anonFunc, left=param_list, right=body)

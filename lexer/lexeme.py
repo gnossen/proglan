@@ -1,7 +1,7 @@
 # Author: Richard Belleville
 
 class Lexeme:
-    GEN_PURP =      -2
+    gen_purp =      -2
     EOF =           -1
     UNKNOWN =       0
     NUMBER =        1
@@ -16,36 +16,37 @@ class Lexeme:
     LET =           10
     EQUAL =         11
     IF =            12
-    ELSE =          13
-    PLUS =          14
-    MINUS =         15
-    TIMES =         16
-    DIVIDE =        17
-    LAMBDA =        18
-    DOUBLE_EQUAL =  19
-    GREATER_THAN =  20
-    LESS_THAN =     21
+    WHILE =         13
+    ELSE =          14
+    PLUS =          15
+    MINUS =         16
+    TIMES =         17
+    DIVIDE =        18
+    LAMBDA =        19
+    DOUBLE_EQUAL =  20
+    GREATER_THAN =  21
+    LESS_THAN =     22
 
-    funcDef =       22
-    optParamlist =  23
-    paramList =     24
-    optExprList =   25
-    exprList =      26
-    expr =          27
-    varDecl =       28
-    varAssign =     29
-    ifExpr =        30
-    elseExpr =      31
-    whileExpr =     32
-    primary =       33
-    operator =      34
-    funcCall =      35
-    optAnonArg =    36
-    optArglist =    37
-    argList =       38
-    anonFunc =      39
-    identExpr =     40
-    primExpr =      41
+    funcDef =       23
+    optParamlist =  24
+    paramList =     25
+    optExprList =   26
+    exprList =      27
+    expr =          28
+    varDecl =       29
+    varAssign =     30
+    ifExpr =        31
+    elseExpr =      32
+    whileExpr =     33
+    primary =       34
+    operator =      35
+    funcCall =      36
+    optAnonArg =    37
+    optArglist =    38
+    argList =       39
+    anonFunc =      40
+    identExpr =     41
+    primExpr =      42
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 

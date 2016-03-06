@@ -70,6 +70,8 @@ class Lexer:
                 return Lexeme(Lexeme.LET, line=self.line, col=self.col - 3)
             elif word == "if":
                 return Lexeme(Lexeme.IF, line=self.line, col=self.col - 2)
+            elif word == "while":
+                return Lexeme(Lexeme.WHILE, line=self.line, col=self.col - 2)
             elif word == "else":
                 return Lexeme(Lexeme.ELSE, line=self.line, col=self.col - 4)
             elif word == "lambda":
