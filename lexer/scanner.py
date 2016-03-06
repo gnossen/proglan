@@ -43,4 +43,3 @@ class Scanner:
                 s += str(lexeme) + "\n"
 
         return s
-

@@ -76,6 +76,9 @@ class Lexer:
                 return Lexeme(Lexeme.LAMBDA, line=self.line, col=self.col - 6)
             else: 
                 return Lexeme(Lexeme.IDENTIFIER, value=word, line=self.line, col=self.col - len(word))
+        elif ch.isdigit():
+            number = self.lex_number(ch)
+            return Lexeme(Lexeme.NUMBER, value=int(number), line=self.line, col=self.col - len(number))
         else:
             raise Exception("Illegal character '%s'." % ch)
         
@@ -99,3 +102,11 @@ class Lexer:
             return self.lex_word(head + ch)
         else:
             return head
+
+    def lex_number(self, head):
+       ch = self.peek() 
+       if ch is not None and ch.isdigit():
+           self.advance()
+           return self.lex_number(head + ch)
+       else:
+           return head

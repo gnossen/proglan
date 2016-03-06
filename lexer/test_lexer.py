@@ -72,3 +72,7 @@ def test_identifiers():
 
     with pytest.raises(Exception):
         Lexer("$asdf").lex()
+
+def test_numbers():
+    lex = Lexer("12345")
+    assert lex.lex() == Lexeme(Lexeme.NUMBER, value=12345)
