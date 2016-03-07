@@ -1,4 +1,119 @@
-functionDefinition : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
+// no distinction between expressions and statements
+// before eliminating left recursion
+expr: primitive
+    | ifExpr
+    | whileExpr
+    | varDecl
+    | anonFunc
+    | funcDef
+    | varAssign
+    | arrayLiteral
+    | OPAREN expr CPAREN                                        // parenthesized expression
+    | expr OPAREN optArgList CPAREN                             // function call
+    | expr OPAREN optArgList CPAREN OBRACE optExprList CBRACE   // higher order function call
+    | expr OSQBRACE expr CSQBRACE                               // array access
+    | expr OPERATOR expr                                        // binary operator expression
+
+// after eliminating left recursion
+expr: primitive
+    | returnExpr
+    | ifExpr
+    | whileExpr
+    | varDecl
+    | anonFunc
+    | funcDef
+    | varAssign
+
+    // function call
+    | primitive OPAREN optArgList CPAREN
+    | primitive OPAREN optArgList CPAREN expr
+    | ifExpr OPAREN optArgList CPAREN
+    | ifExpr OPAREN optArgList CPAREN expr
+    | whileExpr OPAREN optArgList CPAREN
+    | whileExpr OPAREN optArgList CPAREN expr
+    | varDecl OPAREN optArgList CPAREN
+    | varDecl OPAREN optArgList CPAREN expr
+    | anonFunc OPAREN optArgList CPAREN
+    | anonFunc OPAREN optArgList CPAREN expr
+    | funcDef OPAREN optArgList CPAREN
+    | funcDef OPAREN optArgList CPAREN expr
+    | varAssign OPAREN optArgList CPAREN
+    | varAssign OPAREN optArgList CPAREN expr
+    | arrayLiteral OPAREN optArgList CPAREN
+    | arrayLiteral OPAREN optArgList CPAREN expr
+    | OPAREN expr CPAREN OPAREN optArgList CPAREN
+    | OPAREN expr CPAREN OPAREN optArgList CPAREN expr
+    
+    // higher order function call1
+    | primitive OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | primitive OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | ifExpr OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | ifExpr OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | whileExpr OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | whileExpr OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | varDecl OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | varDecl OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | anonFunc OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | anonFunc OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | funcDef OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | funcDef OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | varAssign OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | varAssign OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | arrayLiteral OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | arrayLiteral OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+    | OPAREN expr CPAREN OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+    | OPAREN expr CPAREN OPAREN optArgList CPAREN OBRACE optExprList CBRACE expr
+
+    // array access
+    | primitive OSQBRACE expr CSQBRACE
+    | primitive OSQBRACE expr CSQBRACE expr
+    | ifExpr OSQBRACE expr CSQBRACE
+    | ifExpr OSQBRACE expr CSQBRACE expr
+    | whileExpr OSQBRACE expr CSQBRACE
+    | whileExpr OSQBRACE expr CSQBRACE expr
+    | varDecl OSQBRACE expr CSQBRACE
+    | varDecl OSQBRACE expr CSQBRACE expr
+    | anonFunc OSQBRACE expr CSQBRACE
+    | anonFunc OSQBRACE expr CSQBRACE expr
+    | funcDef OSQBRACE expr CSQBRACE
+    | funcDef OSQBRACE expr CSQBRACE expr
+    | varAssign OSQBRACE expr CSQBRACE
+    | varAssign OSQBRACE expr CSQBRACE expr
+    | OPAREN expr CPAREN OSQBRACE expr CSQBRACE
+    | OPAREN expr CPAREN OSQBRACE expr CSQBRACE expr
+
+    // binary operator expression
+    | primitive OPERATOR expr
+    | ifExpr OPERATOR expr
+    | whileExpr OPERATOR expr
+    | varDecl OPERATOR expr
+    | anonFunc OPERATOR expr
+    | funcDef OPERATOR expr
+    | varAssign OPERATOR expr
+    | OPAREN expr CPAREN OPERATOR expr
+
+returnExpr : RETURN expr
+
+arrayLiteral : OSQBRACE optCommaExprList CSQBRACE
+
+optArgList : EPSILON
+           | argList
+
+argList : expr
+        | expr COMMA argList
+
+optCommaExprList : EPSILON
+                 | commaExprList
+
+commaExprList : expr
+              | expr COMMA commaExprList
+
+varDecl : LET IDENTIFIER
+        | LET IDENTIFIER EQUAL expression
+
+varAssign : IDENTIFIER EQUAL expression
+
+funcDef : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optExprList CBRACE
 
 optParamList : EPSILON
              | paramList
@@ -7,31 +122,12 @@ paramList : IDENTIFIER
           | IDENTIFIER COMMA paramList
 
 optExpressionList : EPSILON
-                 | expressionList
+                 | exprList
 
-expressionList : expression
-              | expression expressionList
+exprList : expr
+         | expr NEWLINE exprList
+         | expr SEMICOLON exprList
 
-expression : variableDeclaration
-           | ifStatement
-           | whileStatement
-           | OPAREN expression CPAREN
-           | anonymousFunction
-           | functionDefinition
-           | identExpr
-           | primExpr
-
-identExpr : varAssign
-          | functionCall
-          | hoFuncCall
-
-primExpr : primary
-         | primary OPERATOR expr
-
-variableDeclaration : LET IDENTIFIER
-                    | LET IDENTIFIER EQUAL expression
-
-variableAssignment : IDENTIFIER EQUAL expression
 
 ifStatement : IF OPAREN expression CPAREN OBRACE expressionList CBRACE optElse
 
@@ -49,19 +145,14 @@ operator : PLUS
          | MINUS
          | TIMES
          | DIVIDE
+         | AND
+         | OR
+         | XOR
+         | BIT_AND
+         | BIT_OR
+         | BIT_XOR
          | DOUBLE_EQUAL
          | GREATER_THAN
          | LESS_THAN
-
-functionCall : IDENTIFIER OPAREN optArgList CPAREN optAnonArg
-
-optAnonArg : EPSILON
-           | OBRACE expressionList CBRACE
-
-optArgList : EPSILON
-           | argList
-
-argList : IDENTIFIER
-        | IDENTIFIER argList
 
 anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE

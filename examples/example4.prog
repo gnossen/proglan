@@ -1,0 +1,8 @@
+let v = 0 and (1 or "0") xor 2
+get_func()()
+
+def return() {
+    return 3
+}
+
+v = 0 & 1 (1 | 0) ^ 2
