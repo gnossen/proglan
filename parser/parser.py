@@ -328,54 +328,42 @@ class Parser:
         return expr_list
 
 def make_funcDef(func_name, param_list, expr_list):
-    # print("Making func def!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=param_list, right=expr_list)
     return Lexeme(Lexeme.funcDef, left=func_name, right=gen_purp)
 
 def make_paramList(param, sublist):
-    # print("Making param list!")
     return Lexeme(Lexeme.paramList, left=param, right=sublist)
 
 def make_argList(arg, sublist):
-    # print("Making arg list!")
     return Lexeme(Lexeme.argList, left=arg, right=sublist)
 
 def make_exprList(expr, sublist):
-    # print("Making expr list!")
     return Lexeme(Lexeme.exprList, left=expr, right=sublist)
 
 def make_varDecl(var_name, value):
-    # print("Making var decl!")
     return Lexeme(Lexeme.varDecl, left=var_name, right=value)
 
 def make_ifExpr(condition, body, else_clause):
-    # print("Making if expr!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=body, right=else_clause)
     if_statement = Lexeme(Lexeme.ifExpr, left=condition, right=gen_purp)
     return if_statement
 
 def make_elseExpr(body, if_expr):
-    # print("Making else expr!")
     return Lexeme(Lexeme.elseExpr, left=body, right=if_expr)
 
 def make_whileExpr(condition, expr_list):
-    # print("Making while expr!")
     return Lexeme(Lexeme.whileExpr, left=condition, right=expr_list)
 
 def make_primExpr(prim, op, expr):
-    # print("Making prim expr!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=op, right=expr)
     return Lexeme(Lexeme.primExpr, left=prim, right=gen_purp)
 
 def make_funcCall(func_name, arg_list, anon_arg):
-    # print("Making func call!")
     gen_purp = Lexeme(Lexeme.gen_purp, left=arg_list, right=anon_arg)
     return Lexeme(Lexeme.funcCall, left=func_name, right=gen_purp)
 
 def make_anonFunc(param_list, body):
-    # print("Making anon func!")
     return Lexeme(Lexeme.anonFunc, left=param_list, right=body)
 
 def make_varAssign(var_name, value):
-    # print("Making car assign!")
     return Lexeme(Lexeme.varAssign, left=var_name, right=value)
