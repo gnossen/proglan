@@ -70,6 +70,12 @@ class Lexer:
             return Lexeme(Lexeme.BITWISE_OR, line=self.line, col=self.col - 1)
         elif ch == "^":
             return Lexeme(Lexeme.BITWISE_XOR, line=self.line, col=self.col - 1)
+        elif ch == "\n":
+            return Lexeme(Lexeme.NEWLINE, line=self.line, col=self.col - 1)
+        elif ch == "\\":
+            if self.peek() == "\n":
+                self.advance()
+                return self.lex()
         elif ch == "=":
             return self.lex_equal()
         elif ch in self.word_start_chars:
@@ -87,7 +93,7 @@ class Lexer:
             elif word == "lambda":
                 return Lexeme(Lexeme.LAMBDA, line=self.line, col=self.col - 6)
             elif word == "return":
-                return Lexeme(Lexeme.RETURN, line=self.line, col=self.col - 7)
+                return Lexeme(Lexeme.RETURN, line=self.line, col=self.col - 6)
             elif word == "and":
                 return Lexeme(Lexeme.AND, line=self.line, col=self.col - 3)
             elif word == "or":
@@ -108,7 +114,7 @@ class Lexer:
     def skip_inconsequential(self):
         last_line = None
         last_col = None
-        while last_line != self.line and last_col != self.col:
+        while last_line != self.line or last_col != self.col:
             last_line = self.line
             last_col = self.col
             self.skip_whitespace()
@@ -116,7 +122,7 @@ class Lexer:
         
     def skip_whitespace(self):
         char = self.peek()
-        while char is not None and char.isspace():
+        while char is not None and char != "\n" and char.isspace():
             self.advance()
             char = self.peek()
 

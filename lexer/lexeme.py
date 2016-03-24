@@ -33,27 +33,28 @@ class Lexeme:
     BITWISE_AND =   27
     BITWISE_OR =    28
     BITWISE_XOR =   29
+    NEWLINE =       30
 
-    funcDef =       30
-    optParamlist =  31
-    paramList =     32
-    optExprList =   33
-    exprList =      34
-    expr =          35
-    varDecl =       36
-    varAssign =     37
-    ifExpr =        38
-    elseExpr =      39
-    whileExpr =     40
-    primary =       41
-    operator =      42
-    funcCall =      43
-    optAnonArg =    44
-    optArglist =    45
-    argList =       46
-    anonFunc =      47
-    identExpr =     48
-    primExpr =      49
+    funcDef =       31
+    optParamlist =  32
+    paramList =     33
+    optExprList =   34
+    exprList =      35
+    expr =          36
+    varDecl =       37
+    varAssign =     38
+    ifExpr =        39
+    elseExpr =      40
+    whileExpr =     41
+    primary =       42
+    operator =      43
+    funcCall =      44
+    optAnonArg =    45
+    optArglist =    46
+    argList =       47
+    anonFunc =      48
+    identExpr =     49
+    primExpr =      50
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 
@@ -95,11 +96,11 @@ class Lexeme:
         return not self.__eq__(other)
 
 def match_lexemes(A, B):
-    if len(A) != len(B):
-        return False
-
     for a, b in zip(A, B):
        if a != b or a.line != b.line or a.col != b.col:
-           return False
+           raise Exception("%s != %s" % (str(a), str(b)))
+
+    if len(A) != len(B):
+        raise Exception("Lengths do not match.")
 
     return True

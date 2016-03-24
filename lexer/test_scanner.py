@@ -13,6 +13,7 @@ def test_example1():
                     Lexeme(Lexeme.IDENTIFIER, value="n", line=0, col=10),
                     Lexeme(Lexeme.CPAREN, line=0, col=11),
                     Lexeme(Lexeme.OBRACE, line=0, col=13),
+                    Lexeme(Lexeme.NEWLINE, line=1, col=-1),
                     Lexeme(Lexeme.LAMBDA, line=1, col=4),
                     Lexeme(Lexeme.OPAREN, line=1, col=10),
                     Lexeme(Lexeme.IDENTIFIER, value="x", line=1, col=11),
@@ -22,6 +23,7 @@ def test_example1():
                     Lexeme(Lexeme.TIMES, line=1, col=17),
                     Lexeme(Lexeme.IDENTIFIER, value="n", line=1, col=18),
                     Lexeme(Lexeme.CBRACE, line=1, col=20),
+                    Lexeme(Lexeme.NEWLINE, line=2, col=-1),
                     Lexeme(Lexeme.CBRACE, line=2, col=0),
                     Lexeme(Lexeme.EOF, line=3, col=0)
                ]
@@ -36,14 +38,17 @@ def test_example2():
                 Lexeme(Lexeme.OPAREN, line=0, col=14),
                 Lexeme(Lexeme.CPAREN, line=0, col=15),
                 Lexeme(Lexeme.OBRACE, line=0, col=17),
+                Lexeme(Lexeme.NEWLINE, line=1, col=-1),
                 Lexeme(Lexeme.LET, line=1, col=4),
                 Lexeme(Lexeme.IDENTIFIER, value="hello", line=1, col=8),
                 Lexeme(Lexeme.EQUAL, line=1, col=14),
                 Lexeme(Lexeme.STRING, value="Hello", line=1, col=16),
+                Lexeme(Lexeme.NEWLINE, line=2, col=-1),
                 Lexeme(Lexeme.LET, line=2, col=4),
                 Lexeme(Lexeme.IDENTIFIER, value="world", line=2, col=8),
                 Lexeme(Lexeme.EQUAL, line=2, col=14),
                 Lexeme(Lexeme.STRING, value="world", line=2, col=16),
+                Lexeme(Lexeme.NEWLINE, line=3, col=-1),
                 Lexeme(Lexeme.IDENTIFIER, value="print", line=4, col=4),
                 Lexeme(Lexeme.OPAREN, line=4, col=9),
                 Lexeme(Lexeme.IDENTIFIER, value="hello", line=4, col=10),
@@ -54,6 +59,7 @@ def test_example2():
                 Lexeme(Lexeme.PLUS, line=4, col=30),
                 Lexeme(Lexeme.STRING, value="!", line=4, col=32),
                 Lexeme(Lexeme.CPAREN, line=4, col=35),
+                Lexeme(Lexeme.NEWLINE, line=5, col=-1),
                 Lexeme(Lexeme.CBRACE, line=5, col=0),
                 Lexeme(Lexeme.EOF, line=6, col=0)
                ]
@@ -75,19 +81,24 @@ def test_example4():
                 Lexeme(Lexeme.CPAREN, line=0, col=23),
                 Lexeme(Lexeme.XOR, line=0, col=25),
                 Lexeme(Lexeme.NUMBER, value=2, line=0, col=29),
+                Lexeme(Lexeme.NEWLINE, line=1, col=-1),
                 Lexeme(Lexeme.IDENTIFIER, value="get_func", line=1, col=0),
                 Lexeme(Lexeme.OPAREN, line=1, col=8),
                 Lexeme(Lexeme.CPAREN, line=1, col=9),
                 Lexeme(Lexeme.OPAREN, line=1, col=10),
                 Lexeme(Lexeme.CPAREN, line=1, col=11),
+                Lexeme(Lexeme.NEWLINE, line=2, col=-1),
                 Lexeme(Lexeme.DEF, line=3, col=0),
                 Lexeme(Lexeme.IDENTIFIER, value="return_stuff", line=3, col=4),
                 Lexeme(Lexeme.OPAREN, line=3, col=16),
                 Lexeme(Lexeme.CPAREN, line=3, col=17),
                 Lexeme(Lexeme.OBRACE, line=3, col=19),
+                Lexeme(Lexeme.NEWLINE, line=4, col=-1),
                 Lexeme(Lexeme.RETURN, line=4, col=4),
                 Lexeme(Lexeme.NUMBER, value=3, line=4, col=11),
+                Lexeme(Lexeme.NEWLINE, line=5, col=-1),
                 Lexeme(Lexeme.CBRACE, line=5, col=0),
+                Lexeme(Lexeme.NEWLINE, line=6, col=-1),
                 Lexeme(Lexeme.IDENTIFIER, value="v", line=7, col=0),
                 Lexeme(Lexeme.EQUAL, line=7, col=2),
                 Lexeme(Lexeme.NUMBER, value=0, line=7, col=4),
@@ -103,4 +114,25 @@ def test_example4():
     ]
 
     actual = Scanner(file="../examples/example4.prog").scan()
+    assert match_lexemes(actual, expected)
+
+def test_example5():
+    expected = [
+                Lexeme(Lexeme.IDENTIFIER, value="v", line=0, col=0),
+                Lexeme(Lexeme.EQUAL, line=0, col=2),
+                Lexeme(Lexeme.NUMBER, value=1, line=0, col=4),
+                Lexeme(Lexeme.PLUS, line=0, col=6),
+                Lexeme(Lexeme.NUMBER, value=1, line=0, col=8),
+                Lexeme(Lexeme.NEWLINE, line=1, col=-1),
+                Lexeme(Lexeme.IDENTIFIER, value="y", line=2, col=0),
+                Lexeme(Lexeme.EQUAL, line=2, col=2),
+                Lexeme(Lexeme.NUMBER, value=1, line=2, col=4),
+                Lexeme(Lexeme.PLUS, line=2, col=6),
+                Lexeme(Lexeme.NUMBER, value=2, line=2, col=8),
+                Lexeme(Lexeme.PLUS, line=3, col=4),
+                Lexeme(Lexeme.NUMBER, value=3, line=3, col=6),
+                Lexeme(Lexeme.EOF, line=4, col=0)
+    ]
+
+    actual = Scanner(file="../examples/example5.prog").scan()
     assert match_lexemes(actual, expected)
