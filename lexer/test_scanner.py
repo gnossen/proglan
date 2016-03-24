@@ -60,3 +60,47 @@ def test_example2():
 
     actual = Scanner(file="../examples/example2.prog").scan()
     assert match_lexemes(actual, expected)
+
+def test_example4():
+    expected = [
+                Lexeme(Lexeme.LET, line=0, col=0),
+                Lexeme(Lexeme.IDENTIFIER, value="v", line=0, col=4),
+                Lexeme(Lexeme.EQUAL, line=0, col=6),
+                Lexeme(Lexeme.NUMBER, value=0, line=0, col=8),
+                Lexeme(Lexeme.AND, line=0, col=10),
+                Lexeme(Lexeme.OPAREN, line=0, col=14),
+                Lexeme(Lexeme.NUMBER, value=1, line=0, col=15),
+                Lexeme(Lexeme.OR, line=0, col=17),
+                Lexeme(Lexeme.STRING, value="0", line=0, col=20),
+                Lexeme(Lexeme.CPAREN, line=0, col=23),
+                Lexeme(Lexeme.XOR, line=0, col=25),
+                Lexeme(Lexeme.NUMBER, value=2, line=0, col=29),
+                Lexeme(Lexeme.IDENTIFIER, value="get_func", line=1, col=0),
+                Lexeme(Lexeme.OPAREN, line=1, col=8),
+                Lexeme(Lexeme.CPAREN, line=1, col=9),
+                Lexeme(Lexeme.OPAREN, line=1, col=10),
+                Lexeme(Lexeme.CPAREN, line=1, col=11),
+                Lexeme(Lexeme.DEF, line=3, col=0),
+                Lexeme(Lexeme.IDENTIFIER, value="return_stuff", line=3, col=4),
+                Lexeme(Lexeme.OPAREN, line=3, col=16),
+                Lexeme(Lexeme.CPAREN, line=3, col=17),
+                Lexeme(Lexeme.OBRACE, line=3, col=19),
+                Lexeme(Lexeme.RETURN, line=4, col=4),
+                Lexeme(Lexeme.NUMBER, value=3, line=4, col=11),
+                Lexeme(Lexeme.CBRACE, line=5, col=0),
+                Lexeme(Lexeme.IDENTIFIER, value="v", line=7, col=0),
+                Lexeme(Lexeme.EQUAL, line=7, col=2),
+                Lexeme(Lexeme.NUMBER, value=0, line=7, col=4),
+                Lexeme(Lexeme.BITWISE_AND, line=7, col=6),
+                Lexeme(Lexeme.OPAREN, line=7, col=8),
+                Lexeme(Lexeme.NUMBER, value=1, line=7, col=9),
+                Lexeme(Lexeme.BITWISE_OR, line=7, col=11),
+                Lexeme(Lexeme.NUMBER, value=0, line=7, col=13),
+                Lexeme(Lexeme.CPAREN, line=7, col=14),
+                Lexeme(Lexeme.BITWISE_XOR, line=7, col=16),
+                Lexeme(Lexeme.NUMBER, value=2, line=7, col=18),
+                Lexeme(Lexeme.EOF, line=8, col=0)
+    ]
+
+    actual = Scanner(file="../examples/example4.prog").scan()
+    assert match_lexemes(actual, expected)

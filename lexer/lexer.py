@@ -46,6 +46,10 @@ class Lexer:
             return Lexeme(Lexeme.OBRACE, line=self.line, col=self.col - 1)
         elif ch == "}":
             return Lexeme(Lexeme.CBRACE, line=self.line, col=self.col - 1)
+        elif ch == "[":
+            return Lexeme(Lexeme.OSQBRACE, line=self.line, col=self.col - 1)
+        elif ch == "]":
+            return Lexeme(Lexeme.CSQBRACE, line=self.line, col=self.col - 1)
         elif ch == ",":
             return Lexeme(Lexeme.COMMA, line=self.line, col=self.col - 1)
         elif ch == "+":
@@ -60,6 +64,12 @@ class Lexer:
             return Lexeme(Lexeme.GREATER_THAN, line=self.line, col=self.col - 1)
         elif ch == "<":
             return Lexeme(Lexeme.LESS_THAN, line=self.line, col=self.col - 1)
+        elif ch == "&":
+            return Lexeme(Lexeme.BITWISE_AND, line=self.line, col=self.col - 1)
+        elif ch == "|":
+            return Lexeme(Lexeme.BITWISE_OR, line=self.line, col=self.col - 1)
+        elif ch == "^":
+            return Lexeme(Lexeme.BITWISE_XOR, line=self.line, col=self.col - 1)
         elif ch == "=":
             return self.lex_equal()
         elif ch in self.word_start_chars:
@@ -76,6 +86,14 @@ class Lexer:
                 return Lexeme(Lexeme.ELSE, line=self.line, col=self.col - 4)
             elif word == "lambda":
                 return Lexeme(Lexeme.LAMBDA, line=self.line, col=self.col - 6)
+            elif word == "return":
+                return Lexeme(Lexeme.RETURN, line=self.line, col=self.col - 7)
+            elif word == "and":
+                return Lexeme(Lexeme.AND, line=self.line, col=self.col - 3)
+            elif word == "or":
+                return Lexeme(Lexeme.OR, line=self.line, col=self.col - 2)
+            elif word == "xor":
+                return Lexeme(Lexeme.XOR, line=self.line, col=self.col - 3)
             else: 
                 return Lexeme(Lexeme.IDENTIFIER, value=word, line=self.line, col=self.col - len(word))
         elif ch.isdigit():
