@@ -67,7 +67,6 @@ exprList : expr
          | expr NEWLINE exprList
          | expr SEMICOLON exprList
 
-
 ifStatement : IF OPAREN expression CPAREN OBRACE expressionList CBRACE optElse
 
 optElse : EPSILON
@@ -78,6 +77,9 @@ whileStatement : WHILE OPAREN expression CPAREN OBRACE expressionList CBRACE
 
 primary : NUMBER
         | STRING
+        | TRUE
+        | FALSE
+        | NULL
         | IDENTIFIER 
 
 operator : PLUS
@@ -93,5 +95,8 @@ operator : PLUS
          | DOUBLE_EQUAL
          | GREATER_THAN
          | LESS_THAN
+         | LEQ
+         | GEQ
+         | NEQ
 
 anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE

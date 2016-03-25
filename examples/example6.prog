@@ -1,0 +1,6 @@
+let a = true and false
+if (a != false) { a = null; print("foo") }
+
+while (a <= 7) {
+    a = a & true
+}

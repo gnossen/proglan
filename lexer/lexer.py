@@ -61,9 +61,22 @@ class Lexer:
         elif ch == "/":
             return Lexeme(Lexeme.DIVIDE, line=self.line, col=self.col - 1)
         elif ch == ">":
-            return Lexeme(Lexeme.GREATER_THAN, line=self.line, col=self.col - 1)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.GEQ, line=self.line, col=self.col - 2)
+            else:
+                return Lexeme(Lexeme.GREATER_THAN, line=self.line, col=self.col - 1)
         elif ch == "<":
-            return Lexeme(Lexeme.LESS_THAN, line=self.line, col=self.col - 1)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.LEQ, line=self.line, col=self.col - 2)
+            else:
+                return Lexeme(Lexeme.LESS_THAN, line=self.line, col=self.col - 1)
+        elif ch == "!" and self.peek() == "=":
+            self.advance()
+            return Lexeme(Lexeme.NEQ, line=self.line, col=self.col - 2)
+        elif ch == ";":
+            return Lexeme(Lexeme.SEMICOLON, line=self.line, col=self.col - 1)
         elif ch == "&":
             return Lexeme(Lexeme.BITWISE_AND, line=self.line, col=self.col - 1)
         elif ch == "|":
@@ -100,6 +113,12 @@ class Lexer:
                 return Lexeme(Lexeme.OR, line=self.line, col=self.col - 2)
             elif word == "xor":
                 return Lexeme(Lexeme.XOR, line=self.line, col=self.col - 3)
+            elif word == "true":
+                return Lexeme(Lexeme.TRUE, line=self.line, col=self.col - 4)
+            elif word == "false":
+                return Lexeme(Lexeme.FALSE, line=self.line, col=self.col - 5)
+            elif word == "null":
+                return Lexeme(Lexeme.NULL, line=self.line, col=self.col - 4)
             else: 
                 return Lexeme(Lexeme.IDENTIFIER, value=word, line=self.line, col=self.col - len(word))
         elif ch.isdigit():

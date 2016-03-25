@@ -145,6 +145,54 @@ def test_example5():
     save_lex_stream("../examples/example5-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
+def test_example6():
+    expected = [
+        Lexeme(Lexeme.LET, line=0, col=0),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=0, col=4),
+        Lexeme(Lexeme.EQUAL, line=0, col=6),
+        Lexeme(Lexeme.TRUE, line=0, col=8),
+        Lexeme(Lexeme.AND, line=0, col=13),
+        Lexeme(Lexeme.FALSE, line=0, col=17),
+        Lexeme(Lexeme.NEWLINE, line=1, col=-1),
+        Lexeme(Lexeme.IF, line=1, col=0),
+        Lexeme(Lexeme.OPAREN, line=1, col=3),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=1, col=4),
+        Lexeme(Lexeme.NEQ, line=1, col=6),
+        Lexeme(Lexeme.FALSE, line=1, col=9),
+        Lexeme(Lexeme.CPAREN, line=1, col=14),
+        Lexeme(Lexeme.OBRACE, line=1, col=16),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=1, col=18),
+        Lexeme(Lexeme.EQUAL, line=1, col=20),
+        Lexeme(Lexeme.NULL, line=1, col=22),
+        Lexeme(Lexeme.SEMICOLON, line=1, col=26),
+        Lexeme(Lexeme.IDENTIFIER, value="print", line=1, col=28),
+        Lexeme(Lexeme.OPAREN, line=1, col=33),
+        Lexeme(Lexeme.STRING, value="foo", line=1, col=34),
+        Lexeme(Lexeme.CPAREN, line=1, col=39),
+        Lexeme(Lexeme.CBRACE, line=1, col=41),
+        Lexeme(Lexeme.NEWLINE, line=2, col=-1),
+        Lexeme(Lexeme.WHILE, line=3, col=3),
+        Lexeme(Lexeme.OPAREN, line=3, col=6),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=3, col=7),
+        Lexeme(Lexeme.LEQ, line=3, col=9),
+        Lexeme(Lexeme.NUMBER, value=7, line=3, col=12),
+        Lexeme(Lexeme.CPAREN, line=3, col=13),
+        Lexeme(Lexeme.OBRACE, line=3, col=15),
+        Lexeme(Lexeme.NEWLINE, line=4, col=-1),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=4, col=4),
+        Lexeme(Lexeme.EQUAL, line=4, col=6),
+        Lexeme(Lexeme.IDENTIFIER, value="a", line=4, col=8),
+        Lexeme(Lexeme.BITWISE_AND, line=4, col=10),
+        Lexeme(Lexeme.TRUE, line=4, col=12),
+        Lexeme(Lexeme.NEWLINE, line=5, col=-1),
+        Lexeme(Lexeme.CBRACE, line=5, col=0),
+        Lexeme(Lexeme.EOF, line=6, col=0)
+    ]
+
+    actual = Scanner(file="../examples/example6.prog").scan()
+    save_lex_stream("../examples/example6-lexed.txt", actual)
+    assert match_lexemes(actual, expected)
+
 def save_lex_stream(filename, lexemes):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     realpath = os.path.join(cur_dir, filename)
