@@ -29,6 +29,7 @@ def test_example1():
                ]
 
     actual = Scanner(file="../examples/example1.prog").scan()
+    save_lex_stream("../examples/example1-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example2():
@@ -65,7 +66,12 @@ def test_example2():
                ]
 
     actual = Scanner(file="../examples/example2.prog").scan()
+    save_lex_stream("../examples/example2-lexed.txt", actual)
     assert match_lexemes(actual, expected)
+
+def test_example3():
+    actual = Scanner(file="../examples/example3.prog").scan()
+    save_lex_stream("../examples/example3-lexed.txt", actual)
 
 def test_example4():
     expected = [
@@ -114,6 +120,7 @@ def test_example4():
     ]
 
     actual = Scanner(file="../examples/example4.prog").scan()
+    save_lex_stream("../examples/example4-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example5():
@@ -135,4 +142,15 @@ def test_example5():
     ]
 
     actual = Scanner(file="../examples/example5.prog").scan()
+    save_lex_stream("../examples/example5-lexed.txt", actual)
     assert match_lexemes(actual, expected)
+
+def save_lex_stream(filename, lexemes):
+    cur_dir = os.path.dirname(os.path.realpath(__file__))
+    realpath = os.path.join(cur_dir, filename)
+    f = open(realpath, "w")
+
+    for lex in lexemes:
+        f.write("%s\n" % str(lex))
+
+    f.close()

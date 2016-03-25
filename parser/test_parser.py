@@ -57,8 +57,7 @@ def test_example2():
     hello1 = Lexeme(Lexeme.IDENTIFIER, value="hello")
     var_decl1 = Lexeme(Lexeme.varDecl, left=hello1, right=hello_str1)
     expr_list1 = Lexeme(Lexeme.exprList, left=var_decl1, right=expr_list2)
-    param_list = Lexeme(Lexeme.paramList)
-    gen_purp1 = Lexeme(Lexeme.gen_purp, left=param_list, right=expr_list1)
+    gen_purp1 = Lexeme(Lexeme.gen_purp, right=expr_list1)
     print_hello = Lexeme(Lexeme.IDENTIFIER, value="printHello")
     func_def = Lexeme(Lexeme.funcDef, left=print_hello, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def) 
@@ -69,8 +68,7 @@ def test_example2():
     assert lex_tree_equal(expected, ast)
 
 def test_example3():
-    arg_list6 = Lexeme(Lexeme.argList)
-    gen_purp7 = Lexeme(Lexeme.gen_purp, left=arg_list6)
+    gen_purp7 = Lexeme(Lexeme.gen_purp)
     fib2 = Lexeme(Lexeme.IDENTIFIER, value="fib")
     func_call4 = Lexeme(Lexeme.funcCall, left=fib2, right=gen_purp7)
     expr_list1 = Lexeme(Lexeme.exprList, left=func_call4)
@@ -82,8 +80,7 @@ def test_example3():
     next_fib3 = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
     func_call3 = Lexeme(Lexeme.funcCall, left=next_fib3, right=gen_purp6)
     expr_list7 = Lexeme(Lexeme.exprList, left=func_call3)
-    param_list5 = Lexeme(Lexeme.paramList)
-    anon_func2 = Lexeme(Lexeme.anonFunc, left=param_list5, right=expr_list7)
+    anon_func2 = Lexeme(Lexeme.anonFunc, right=expr_list7)
     expr_list3 = Lexeme(Lexeme.exprList, left=anon_func2)
     cur4 = Lexeme(Lexeme.IDENTIFIER, value="cur")
     plus1 = Lexeme(Lexeme.PLUS)
@@ -97,8 +94,7 @@ def test_example3():
     next_fib2 = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
     func_call2 = Lexeme(Lexeme.funcCall, left=next_fib2, right=gen_purp4)
     expr_list6 = Lexeme(Lexeme.exprList, left=func_call2)
-    param_list4 = Lexeme(Lexeme.paramList)
-    anon_func1 = Lexeme(Lexeme.anonFunc, left=param_list4, right=expr_list6)
+    anon_func1 = Lexeme(Lexeme.anonFunc, right=expr_list6)
     expr_list5 = Lexeme(Lexeme.exprList, left=anon_func1)
     cur2 = Lexeme(Lexeme.IDENTIFIER, value="cur")
     arg_list1 = Lexeme(Lexeme.argList, left=cur2)
@@ -114,13 +110,13 @@ def test_example3():
     next_fib = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
     func_def2 = Lexeme(Lexeme.funcDef, left=next_fib, right=gen_purp2)
     expr_list2 = Lexeme(Lexeme.exprList, left=func_def2, right=expr_list3)
-    param_list1 = Lexeme(Lexeme.paramList)
-    gen_purp1 = Lexeme(Lexeme.gen_purp, left=param_list1, right=expr_list2)
+    gen_purp1 = Lexeme(Lexeme.gen_purp, right=expr_list2)
     fib1 = Lexeme(Lexeme.IDENTIFIER, value="fib")
     func_def = Lexeme(Lexeme.funcDef, left=fib1, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def, right=expr_list1)
 
     parser = Parser(file="../examples/example3.prog")
+
     ast = parser.parse()
     draw_tree(ast, get_filepath("../examples/proglan-ast3.png"))
     assert lex_tree_equal(expected, ast)
@@ -164,10 +160,11 @@ def lex_tree_equal(a, b):
     if a is None and b is None:
         return True
 
+    if a is None or b is None:
+        raise Exception("a: %s, b: %s" % (str(a), str(b)))
+
     if a != b:
-        print(str(a) + " != " + str(b))
-        pytest.set_trace()
-        return False
+        raise Exception(str(a) + " != " + str(b))
 
     return lex_tree_equal(a.left, b.left) and \
             lex_tree_equal(a.right, b.right)

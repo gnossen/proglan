@@ -27,8 +27,9 @@ expr: primary metaExpr
 
 metaExpr: OPAREN optArgList CPAREN metaExpr
         | OPAREN optArgList CPAREN OBRACE optExprList CBRACE metaExpr
-        | OSQBRACE expr CSQBRACE metExpr
+        | OSQBRACE expr CSQBRACE metaExpr
         | operator expr metaExpr
+        | EPSILON
 
 returnExpr : RETURN expr
 
