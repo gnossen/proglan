@@ -26,6 +26,7 @@ def test_example1():
     expected = Lexeme(Lexeme.exprList, left=func_def)
 
     parser = Parser(file="../examples/example1.prog")
+
     ast = parser.parse()
     draw_tree(ast, get_filepath("../examples/proglan-ast1.png"))
     assert lex_tree_equal(expected, ast)

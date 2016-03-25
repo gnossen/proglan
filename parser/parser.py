@@ -103,6 +103,9 @@ class Parser:
         if self.check(Lexeme.NEWLINE):
             self.match(Lexeme.NEWLINE)
             listcdr = self.parse_optExprList()
+        elif self.check(Lexeme.SEMICOLON):
+            self.match(Lexeme.SEMICOLON)
+            listcdr = self.parse_optExprList()
 
         return make_exprList(listcar, listcdr)
 
@@ -288,13 +291,22 @@ class Parser:
     def primary_pending(self):
         return self.check(Lexeme.NUMBER) or \
                 self.check(Lexeme.STRING) or \
-                self.check(Lexeme.IDENTIFIER)
+                self.check(Lexeme.IDENTIFIER) or \
+                self.check(Lexeme.TRUE) or \
+                self.check(Lexeme.FALSE) or \
+                self.check(Lexeme.NULL)
     
     def parse_primary(self):
         if self.check(Lexeme.NUMBER):
             return self.match(Lexeme.NUMBER)
         elif self.check(Lexeme.STRING):
             return self.match(Lexeme.STRING)
+        elif self.check(Lexeme.TRUE):
+            return self.match(Lexeme.TRUE)
+        elif self.check(Lexeme.FALSE):
+            return self.match(Lexeme.FALSE)
+        elif self.check(Lexeme.NULL):
+            return self.match(Lexeme.NULL)
         else:
             return self.match(Lexeme.IDENTIFIER)
 
@@ -311,7 +323,10 @@ class Parser:
                 self.check(Lexeme.XOR) or \
                 self.check(Lexeme.BITWISE_AND) or \
                 self.check(Lexeme.BITWISE_OR) or \
-                self.check(Lexeme.BITWISE_XOR)
+                self.check(Lexeme.BITWISE_XOR) or \
+                self.check(Lexeme.LEQ) or \
+                self.check(Lexeme.GEQ) or \
+                self.check(Lexeme.NEQ)
 
     def parse_operator(self):
         if self.check(Lexeme.PLUS):
@@ -338,8 +353,14 @@ class Parser:
             return self.match(Lexeme.BITWISE_AND)
         elif self.check(Lexeme.BITWISE_OR):
             return self.match(Lexeme.BITWISE_OR)
-        else:
+        elif self.check(Lexeme.BITWISE_XOR):
             return self.match(Lexeme.BITWISE_XOR)
+        elif self.check(Lexeme.LEQ):
+            return self.match(Lexeme.LEQ)
+        elif self.check(Lexeme.GEQ):
+            return self.match(Lexeme.GEQ)
+        else:
+            return self.match(Lexeme.NEQ)
 
     def varAssign_pending(self):
         return self.check(Lexeme.IDENTIFIER) 
