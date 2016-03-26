@@ -25,10 +25,10 @@ def test_example1():
     func_def = Lexeme(Lexeme.funcDef, left=multn, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def)
 
-    parser = Parser(file="../examples/example1.prog")
+    parser = Parser(file="../../examples/example1.prog")
 
     ast = parser.parse()
-    draw_tree(ast, get_filepath("../examples/proglan-ast1.png"))
+    draw_tree(ast, get_filepath("../../examples/proglan-ast1.png"))
     assert lex_tree_equal(expected, ast)
 
 def test_example2():
@@ -63,9 +63,9 @@ def test_example2():
     func_def = Lexeme(Lexeme.funcDef, left=print_hello, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def) 
 
-    parser = Parser(file="../examples/example2.prog")
+    parser = Parser(file="../../examples/example2.prog")
     ast = parser.parse()
-    draw_tree(ast, get_filepath("../examples/proglan-ast2.png"))
+    draw_tree(ast, get_filepath("../../examples/proglan-ast2.png"))
     assert lex_tree_equal(expected, ast)
 
 def test_example3():
@@ -116,10 +116,10 @@ def test_example3():
     func_def = Lexeme(Lexeme.funcDef, left=fib1, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def, right=expr_list1)
 
-    parser = Parser(file="../examples/example3.prog")
+    parser = Parser(file="../../examples/example3.prog")
 
     ast = parser.parse()
-    draw_tree(ast, get_filepath("../examples/proglan-ast3.png"))
+    draw_tree(ast, get_filepath("../../examples/proglan-ast3.png"))
     assert lex_tree_equal(expected, ast)
 
 def get_cur_dir():

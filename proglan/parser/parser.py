@@ -49,7 +49,7 @@ class Parser:
             skip_newlines = False
 
         if not self.check(lexeme_type):
-            raise Exception("Syntax Error: Invalid token '%s'.", str(self.current()))
+            raise Exception("Syntax Error: Invalid token '%s'." % str(self.current()))
         else:
             return self.advance(skip=skip_newlines)
 
@@ -292,8 +292,7 @@ class Parser:
         return self.check(Lexeme.NUMBER) or \
                 self.check(Lexeme.STRING) or \
                 self.check(Lexeme.IDENTIFIER) or \
-                self.check(Lexeme.TRUE) or \
-                self.check(Lexeme.FALSE) or \
+                self.check(Lexeme.BOOL) or \
                 self.check(Lexeme.NULL)
     
     def parse_primary(self):
@@ -301,10 +300,8 @@ class Parser:
             return self.match(Lexeme.NUMBER)
         elif self.check(Lexeme.STRING):
             return self.match(Lexeme.STRING)
-        elif self.check(Lexeme.TRUE):
-            return self.match(Lexeme.TRUE)
-        elif self.check(Lexeme.FALSE):
-            return self.match(Lexeme.FALSE)
+        elif self.check(Lexeme.BOOL):
+            return self.match(Lexeme.BOOL)
         elif self.check(Lexeme.NULL):
             return self.match(Lexeme.NULL)
         else:

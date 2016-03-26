@@ -114,9 +114,9 @@ class Lexer:
             elif word == "xor":
                 return Lexeme(Lexeme.XOR, line=self.line, col=self.col - 3)
             elif word == "true":
-                return Lexeme(Lexeme.TRUE, line=self.line, col=self.col - 4)
+                return Lexeme(Lexeme.BOOL, value=True, line=self.line, col=self.col - 4)
             elif word == "false":
-                return Lexeme(Lexeme.FALSE, line=self.line, col=self.col - 5)
+                return Lexeme(Lexeme.BOOL, value=False, line=self.line, col=self.col - 5)
             elif word == "null":
                 return Lexeme(Lexeme.NULL, line=self.line, col=self.col - 4)
             else: 

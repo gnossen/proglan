@@ -3,3 +3,6 @@
 todo.txt
 *.png
 examples/*.txt
+build/
+dist/
+proglan.egg-info/

@@ -1,9 +1,11 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name='proglan',
-      version='0.0',
+      version='0.1',
       description='CS403 Designer Programming Language',
       author='Richard Belleville',
       author_email='rjbelleville@crimson.ua.edu',
-      py_modules=['lexer', 'parser']
+      setup=['bin/proglan'],
+      # packages=find_packages(exclude=["test_*"])
+      packages=['proglan.lexer', 'proglan.parser', 'proglan.environment']
       )

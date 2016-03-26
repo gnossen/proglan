@@ -1,0 +1,12 @@
+from proglan.environment.environment import *
+import sys
+
+env = Environment()
+while True:
+    code = raw_input(">>>")
+
+    try:
+        env.load_str(code)
+        print(str(env.evaluate()))
+    except Exception as e:
+        print(str(e))

@@ -28,8 +28,8 @@ def test_example1():
                     Lexeme(Lexeme.EOF, line=3, col=0)
                ]
 
-    actual = Scanner(file="../examples/example1.prog").scan()
-    save_lex_stream("../examples/example1-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example1.prog").scan()
+    save_lex_stream("../../examples/example1-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example2():
@@ -65,13 +65,13 @@ def test_example2():
                 Lexeme(Lexeme.EOF, line=6, col=0)
                ]
 
-    actual = Scanner(file="../examples/example2.prog").scan()
-    save_lex_stream("../examples/example2-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example2.prog").scan()
+    save_lex_stream("../../examples/example2-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example3():
-    actual = Scanner(file="../examples/example3.prog").scan()
-    save_lex_stream("../examples/example3-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example3.prog").scan()
+    save_lex_stream("../../examples/example3-lexed.txt", actual)
 
 def test_example4():
     expected = [
@@ -119,8 +119,8 @@ def test_example4():
                 Lexeme(Lexeme.EOF, line=8, col=0)
     ]
 
-    actual = Scanner(file="../examples/example4.prog").scan()
-    save_lex_stream("../examples/example4-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example4.prog").scan()
+    save_lex_stream("../../examples/example4-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example5():
@@ -141,8 +141,8 @@ def test_example5():
                 Lexeme(Lexeme.EOF, line=4, col=0)
     ]
 
-    actual = Scanner(file="../examples/example5.prog").scan()
-    save_lex_stream("../examples/example5-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example5.prog").scan()
+    save_lex_stream("../../examples/example5-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def test_example6():
@@ -150,15 +150,15 @@ def test_example6():
         Lexeme(Lexeme.LET, line=0, col=0),
         Lexeme(Lexeme.IDENTIFIER, value="a", line=0, col=4),
         Lexeme(Lexeme.EQUAL, line=0, col=6),
-        Lexeme(Lexeme.TRUE, line=0, col=8),
+        Lexeme(Lexeme.BOOL, value=True, line=0, col=8),
         Lexeme(Lexeme.AND, line=0, col=13),
-        Lexeme(Lexeme.FALSE, line=0, col=17),
+        Lexeme(Lexeme.BOOL, value=False, line=0, col=17),
         Lexeme(Lexeme.NEWLINE, line=1, col=-1),
         Lexeme(Lexeme.IF, line=1, col=0),
         Lexeme(Lexeme.OPAREN, line=1, col=3),
         Lexeme(Lexeme.IDENTIFIER, value="a", line=1, col=4),
         Lexeme(Lexeme.NEQ, line=1, col=6),
-        Lexeme(Lexeme.FALSE, line=1, col=9),
+        Lexeme(Lexeme.BOOL, value=False, line=1, col=9),
         Lexeme(Lexeme.CPAREN, line=1, col=14),
         Lexeme(Lexeme.OBRACE, line=1, col=16),
         Lexeme(Lexeme.IDENTIFIER, value="a", line=1, col=18),
@@ -183,14 +183,14 @@ def test_example6():
         Lexeme(Lexeme.EQUAL, line=4, col=6),
         Lexeme(Lexeme.IDENTIFIER, value="a", line=4, col=8),
         Lexeme(Lexeme.BITWISE_AND, line=4, col=10),
-        Lexeme(Lexeme.TRUE, line=4, col=12),
+        Lexeme(Lexeme.BOOL, value=True, line=4, col=12),
         Lexeme(Lexeme.NEWLINE, line=5, col=-1),
         Lexeme(Lexeme.CBRACE, line=5, col=0),
         Lexeme(Lexeme.EOF, line=6, col=0)
     ]
 
-    actual = Scanner(file="../examples/example6.prog").scan()
-    save_lex_stream("../examples/example6-lexed.txt", actual)
+    actual = Scanner(file="../../examples/example6.prog").scan()
+    save_lex_stream("../../examples/example6-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
 def save_lex_stream(filename, lexemes):
