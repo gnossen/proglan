@@ -116,12 +116,19 @@ class Parser:
                 self.varDecl_pending() or \
                 self.anonFunc_pending() or \
                 self.funcDef_pending() or \
-                self.varAssign_pending() or \
                 self.arrayLiteral_pending() or \
                 self.check(Lexeme.OPAREN)
 
     def parse_expr(self):
         if self.primary_pending():
+            if self.check(Lexeme.IDENTIFIER):
+                identifier = self.match(Lexeme.IDENTIFIER)
+
+                if self.check(Lexeme.EQUAL):
+                    return self.parse_varAssign(identifier)
+                else:
+                    return self.parse_metaExpr(identifier)
+
             prim = self.parse_primary()
             return self.parse_metaExpr(prim)
         elif self.ifExpr_pending():
@@ -139,9 +146,6 @@ class Parser:
         elif self.funcDef_pending():
             funcDef = self.parse_funcDef()
             return self.parse_metaExpr(funcDef)
-        elif self.varAssign_pending():
-            varAssign = self.parse_varAssign()
-            return self.parse_metaExpr(varAssign)
         elif self.arrayLiteral_pending():
             arrayLiteral = self.parse_arrayLiteral()
             return self.parse_metaExpr(arrayLiteral)
@@ -359,11 +363,7 @@ class Parser:
         else:
             return self.match(Lexeme.NEQ)
 
-    def varAssign_pending(self):
-        return self.check(Lexeme.IDENTIFIER) 
-
-    def parse_varAssign(self):
-        identifier = self.match(Lexeme.IDENTIFIER)
+    def parse_varAssign(self, identifier):
         self.match(Lexeme.EQUAL)
         val = self.parse_expr()
         return make_varAssign(identifier, val)

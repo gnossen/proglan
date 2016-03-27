@@ -122,6 +122,11 @@ def test_example3():
     draw_tree(ast, get_filepath("../../examples/proglan-ast3.png"))
     assert lex_tree_equal(expected, ast)
 
+def test_example6():
+    parser = Parser(file="../../examples/example6.prog")
+    ast = parser.parse()
+    draw_tree(ast, get_filepath("../../examples/proglan-ast6.png"))
+
 def get_cur_dir():
     return os.path.dirname(os.path.realpath(__file__))
 

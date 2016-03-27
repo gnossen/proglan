@@ -43,6 +43,24 @@ class Environment:
         env.right.left = val
         draw_tree(env, "/tmp/" + str(int(time.time())) + ".png")
 
+    def assign(self, identifier, val, env):
+        ids = env.left
+
+        lastval = env.right
+        vals = env.right.left
+
+        while ids is not None:
+            if identifier.value == ids.value:
+                val.left = vals.left
+                lastval.left = val
+                return val
+
+            ids = ids.left
+            vals = vals.left
+            lastval = lastval.left
+
+        raise Exception("Attempted to assign to undefined variable %s." % identifier)
+
     def lookup(self, identifier, env):
         ids = env.left
         vals = env.right.left
@@ -91,6 +109,8 @@ class Environment:
             return self.evalPrimExpr(pt, env)
         elif pt.type == Lexeme.varDecl:
             return self.evalVarDecl(pt, env)
+        elif pt.type == Lexeme.varAssign:
+            return self.evalVarAssign(pt, env)
         elif pt.type == Lexeme.IDENTIFIER:
             return self.lookup(pt, env)
         else:
@@ -102,6 +122,14 @@ class Environment:
 
         right = self.eval(pt.right, env)
         self.insert(pt.left, right, env)
+        return right
+
+    def evalVarAssign(self, pt, env):
+        if not self.varDefined(pt.left, env):
+            raise Exception("Referenced undefined variable %s." % str(pt.left))
+
+        right = self.eval(pt.right, env)
+        self.assign(pt.left, right, env)
         return right
 
     def evalPrimExpr(self, pt, env):
