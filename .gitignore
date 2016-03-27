@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+*.swo
 todo.txt
 *.png
 examples/*.txt

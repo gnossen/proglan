@@ -43,6 +43,36 @@ class Environment:
         env.right.left = val
         draw_tree(env, "/tmp/" + str(int(time.time())) + ".png")
 
+    def lookup(self, identifier, env):
+        ids = env.left
+        vals = env.right.left
+        defining_env = env.right.right.left
+
+        while ids is not None:
+            if identifier.value == ids.value:
+                return Lexeme(vals.type, value=vals.value)
+
+            ids = ids.left
+            vals = vals.left
+        else:
+            if defining_env is not None:
+                return self.lookup(identifier, defining_env)
+
+            raise Exception("Undefined variable %s." % identifier)
+
+    def varDefined(self, identifier, env):
+        ids = env.left
+        vals = env.right.left
+
+        while ids is not None:
+            if identifier.value == ids.value:
+                return True
+
+            ids = ids.left
+            vals = vals.left
+            
+        return False
+
     def evaluate(self):
         root = Parser(input=self.input).parse()
         return self.eval(root, self.env)
@@ -61,11 +91,15 @@ class Environment:
             return self.evalPrimExpr(pt, env)
         elif pt.type == Lexeme.varDecl:
             return self.evalVarDecl(pt, env)
+        elif pt.type == Lexeme.IDENTIFIER:
+            return self.lookup(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
     def evalVarDecl(self, pt, env):
-        # check to see if the identifier is already taken
+        if self.varDefined(pt.left, env):
+            raise Exception("Variable %s already declared." % str(pt.left))
+
         right = self.eval(pt.right, env)
         self.insert(pt.left, right, env)
         return right
@@ -78,6 +112,8 @@ class Environment:
             return self.evalPlus(left, op, right, env)
         elif op.type == Lexeme.MINUS:
             return self.evalMinus(left, op, right, env)
+        elif op.type == Lexeme.TIMES:
+            return self.evalTimes(left, op, right, env)
         elif op.type == Lexeme.DIVIDE:
             return self.evalDivide(left, op, right, env)
         elif op.type == Lexeme.DOUBLE_EQUAL:
@@ -130,6 +166,14 @@ class Environment:
                 return Lexeme(Lexeme.NUMBER, value=(left.value - right.value))
 
         self.binOpError(left, op, right)
+
+    def evalTimes(self, left, op, right, env):
+        if left.type == Lexeme.NUMBER:
+            if right.type == Lexeme.NUMBER:
+                return Lexeme(Lexeme.NUMBER, value=(left.value * right.value))
+        
+        self.binOpError(left, op, right)
+
 
     def evalDivide(self, left, op, right, env):
         if left.type == Lexeme.NUMBER:

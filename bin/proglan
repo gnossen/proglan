@@ -1,5 +1,8 @@
+#!/usr/bin/python
+
 from proglan.environment.environment import *
 import sys
+import traceback
 
 env = Environment()
 while True:
@@ -10,3 +13,4 @@ while True:
         print(str(env.evaluate()))
     except Exception as e:
         print(str(e))
+        # traceback.print_exc()
