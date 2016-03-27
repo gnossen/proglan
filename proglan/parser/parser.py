@@ -208,7 +208,7 @@ class Parser:
 
         else_clause = None
         if self.elseExpr_pending():
-            else_clause = self.parse_else()
+            else_clause = self.parse_elseExpr()
 
         return make_ifExpr(condition, body, else_clause)
 

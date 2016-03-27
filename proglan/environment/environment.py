@@ -113,6 +113,10 @@ class Environment:
             return self.evalVarAssign(pt, env)
         elif pt.type == Lexeme.IDENTIFIER:
             return self.lookup(pt, env)
+        elif pt.type == Lexeme.ifExpr:
+            return self.evalIfExpr(pt, env)
+        elif pt.type == Lexeme.whileExpr:
+            return self.evalWhileExpr(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
@@ -340,6 +344,37 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
         else:
             return Lexeme(Lexeme.BOOL, value=True)
+
+    def evalIfExpr(self, pt, env):
+        cond = self.coerceBool(self.eval(pt.left, env))
+        body = pt.right.left
+        else_expr = pt.right.right
+
+        if cond.value == True:
+            return self.eval(body, env)
+        elif else_expr is not None:
+            return self.evalElseExpr(else_expr, env)
+        else:
+            return Lexeme(Lexeme.NULL)
+
+    def evalElseExpr(self, pt, env):
+        body = pt.left
+        if_expr = pt.right
+
+        if if_expr is not None:
+            return self.evalIfExpr(if_expr, env)
+        else:
+            return self.eval(body, env)
+
+    def evalWhileExpr(self, pt, env):
+        cond_expr = pt.left
+        body = pt.right
+
+        res = Lexeme(Lexeme.NULL)
+        while self.coerceBool(self.eval(cond_expr, env)).value == True:
+            res = self.eval(body, env)
+
+        return res
 
 def draw_tree(root_lexeme, filename):
     def _draw_tree(lex):
