@@ -172,7 +172,7 @@ class Parser:
             self.match(Lexeme.OSQBRACE)
             index_expr = self.parse_expr()
             self.match(Lexeme.CSQBRACE)
-            return self.make_arrayAccess(expr, index_expr)
+            return make_arrayAccess(expr, index_expr)
         elif self.operator_pending():
             operator = self.parse_operator()
             right_expr = self.parse_expr()
@@ -261,7 +261,7 @@ class Parser:
         self.match(Lexeme.OSQBRACE)
         members = self.parse_optCommaExprList()
         self.match(Lexeme.CSQBRACE)
-        return self.make_arrayLiteral(members)
+        return make_arrayLiteral(members)
 
     def parse_optCommaExprList(self):
         if self.expr_pending():
@@ -271,6 +271,7 @@ class Parser:
 
     def parse_commaExprList(self):
         car = self.parse_expr()
+        cdr = None
         if self.check(Lexeme.COMMA):
             self.match(Lexeme.COMMA)
             cdr = self.parse_commaExprList()
@@ -436,3 +437,4 @@ def make_arrayLiteral(members):
 
 def make_list(car, cdr):
     return Lexeme(Lexeme.gen_purp, left=car, right=cdr)
+cdr = None

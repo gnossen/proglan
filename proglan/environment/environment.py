@@ -113,8 +113,14 @@ class Environment:
             return self.evalWhileExpr(pt, env)
         elif pt.type == Lexeme.funcDef:
             return self.evalFuncDef(pt, env)
+        elif pt.type == Lexeme.anonFunc:
+            return self.evalAnonFunc(pt, env)
         elif pt.type == Lexeme.funcCall:
             return self.evalFuncCall(pt, env)
+        elif pt.type == Lexeme.arrayLiteral:
+            return self.evalArrayLiteral(pt, env)
+        elif pt.type == Lexeme.arrayAccess:
+            return self.evalArrayAccess(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
@@ -409,6 +415,34 @@ class Environment:
         body = func.right.left
         return self.eval(body, new_env)
 
+    def evalArrayLiteral(self, pt, env):
+        arr = []
+        elems = pt.left
+        while elems is not None:
+            arr.append(self.eval(elems.left, env))
+            elems = elems.right
+
+        return Lexeme(Lexeme.array, value=arr)
+
+    def evalArrayAccess(self, pt, env):
+        arr = self.eval(pt.left, env)
+        index = self.eval(pt.right, env)
+
+        if arr.type != Lexeme.array:
+            raise Exception("Attempted to index non-array %s." % arr)
+
+        if index.type != Lexeme.NUMBER:
+            raise Exception("Attempted to index array with non-number %s." % index)
+
+        if index.value < 0 or index.value >= len(arr.value):
+            raise Exception("Array index out of bounds %s." % index)
+
+        return arr.value[index.value]
+
+    def evalAnonFunc(self, pt, env):
+       return self.make_function(pt.left, pt.right, env) 
+
     def make_function(self, param_list, body, env):
         join = Lexeme(Lexeme.gen_purp, left=body, right=env)
         return Lexeme(Lexeme.function, left=param_list, right=join)
+    
