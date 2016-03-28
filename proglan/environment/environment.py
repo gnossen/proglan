@@ -1,9 +1,7 @@
 import os
 from ..lexer.lexeme import *
 from ..parser.parser import *
-import pydot
 import time
-import uuid
 
 class Environment:
     def __init__(self, input=None, file=None):
@@ -36,28 +34,24 @@ class Environment:
         ids = env.left
         vals = env.right.left
 
-        identifier.left = ids
-        val.left = vals
+        id_join = Lexeme(Lexeme.gen_purp, left=ids, right=identifier)
+        val_join = Lexeme(Lexeme.gen_purp, left=vals, right=val)
 
-        env.left = identifier
-        env.right.left = val
-        draw_tree(env, "/tmp/" + str(int(time.time())) + ".png")
+        env.left = id_join
+        env.right.left = val_join
 
     def assign(self, identifier, val, env):
         ids = env.left
-
-        lastval = env.right
         vals = env.right.left
 
         while ids is not None:
-            if identifier.value == ids.value:
-                val.left = vals.left
-                lastval.left = val
+            cur_id = ids.right
+            if identifier.value == cur_id.value:
+                vals.right = val
                 return val
 
             ids = ids.left
             vals = vals.left
-            lastval = lastval.left
 
         raise Exception("Attempted to assign to undefined variable %s." % identifier)
 
@@ -67,8 +61,10 @@ class Environment:
         defining_env = env.right.right.left
 
         while ids is not None:
-            if identifier.value == ids.value:
-                return Lexeme(vals.type, value=vals.value)
+            cur_id = ids.right
+            cur_val = vals.right
+            if identifier.value == cur_id.value:
+                return cur_val
 
             ids = ids.left
             vals = vals.left
@@ -80,14 +76,12 @@ class Environment:
 
     def varDefined(self, identifier, env):
         ids = env.left
-        vals = env.right.left
 
         while ids is not None:
-            if identifier.value == ids.value:
+            if identifier.value == ids.right.value:
                 return True
 
             ids = ids.left
-            vals = vals.left
             
         return False
 
@@ -117,6 +111,10 @@ class Environment:
             return self.evalIfExpr(pt, env)
         elif pt.type == Lexeme.whileExpr:
             return self.evalWhileExpr(pt, env)
+        elif pt.type == Lexeme.funcDef:
+            return self.evalFuncDef(pt, env)
+        elif pt.type == Lexeme.funcCall:
+            return self.evalFuncCall(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
@@ -376,30 +374,41 @@ class Environment:
 
         return res
 
-def draw_tree(root_lexeme, filename):
-    def _draw_tree(lex):
-        node = pydot.Node(str(uuid.uuid1()), label='"%s"' % str(lex))
-        graph.add_node(node)
+    def evalFuncDef(self, pt, env):
+        name = pt.left
+        param_list = pt.right.left
+        body = pt.right.right
 
-        if not(lex.left is None and lex.right is None):
-            if lex.left is not None:
-                left = _draw_tree(lex.left)
-            else:
-                left = pydot.Node(str(uuid.uuid1()), label='NULL')
-                graph.add_node(left)
-            
-            graph.add_edge(pydot.Edge(node, left))
+        func = self.make_function(param_list, body, env)
+        self.insert(name, func, env)
+        return func
 
-            if lex.right is not None:
-                right = _draw_tree(lex.right)
-            else:
-                right = pydot.Node(str(uuid.uuid1()), label='NULL')
-                graph.add_node(right)
+    def evalFuncCall(self, pt, env):
+        func = self.eval(pt.left, env)
+        if func.type != Lexeme.function:
+            raise Exception("Attempted to call non-function %s." % str(func))
 
-            graph.add_edge(pydot.Edge(node, right))
+        param_list = func.left
+        arg_list = pt.right.left
+        defining_env = pt.right.right
+        new_env = self.extend_env(None, None, defining_env)
+        while param_list is not None:
+            if arg_list is None:
+                raise Exception("Not enough arguments supplied to %s" % str(pt))
 
-        return node
+            param = param_list.left
+            arg = self.eval(arg_list.left, env)
 
-    graph = pydot.Dot(graph_type='digraph')
-    _draw_tree(root_lexeme)
-    graph.write_png(filename)
+            self.insert(param, arg, new_env)
+            param_list = param_list.right
+            arg_list = arg_list.right
+
+        if arg_list is not None:
+            raise Exception("Too many arguments supplied to %s" % str(pt))
+
+        body = func.right.left
+        return self.eval(body, new_env)
+
+    def make_function(self, param_list, body, env):
+        join = Lexeme(Lexeme.gen_purp, left=body, right=env)
+        return Lexeme(Lexeme.function, left=param_list, right=join)

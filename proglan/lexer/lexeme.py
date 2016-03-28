@@ -66,6 +66,7 @@ class Lexeme:
     arrayAccess =   59
     arrayLiteral =  60
     env =           61
+    function =      62
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 
