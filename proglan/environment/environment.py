@@ -43,6 +43,7 @@ class Environment:
     def assign(self, identifier, val, env):
         ids = env.left
         vals = env.right.left
+        defining_env = env.right.right.left
 
         while ids is not None:
             cur_id = ids.right
@@ -53,7 +54,10 @@ class Environment:
             ids = ids.left
             vals = vals.left
 
-        raise Exception("Attempted to assign to undefined variable %s." % identifier)
+        if defining_env is not None:
+            return self.assign(identifier, val, defining_env)
+        else:
+            raise Exception("Attempted to assign to undefined variable %s." % identifier)
 
     def lookup(self, identifier, env):
         ids = env.left
@@ -133,8 +137,8 @@ class Environment:
         return right
 
     def evalVarAssign(self, pt, env):
-        if not self.varDefined(pt.left, env):
-            raise Exception("Referenced undefined variable %s." % str(pt.left))
+        # if not self.varDefined(pt.left, env):
+        #     raise Exception("Referenced undefined variable %s." % str(pt.left))
 
         right = self.eval(pt.right, env)
         self.assign(pt.left, right, env)
@@ -376,7 +380,8 @@ class Environment:
 
         res = Lexeme(Lexeme.NULL)
         while self.coerceBool(self.eval(cond_expr, env)).value == True:
-            res = self.eval(body, env)
+            new_env = self.extend_env(None, None, env)
+            res = self.eval(body, new_env)
 
         return res
 
@@ -396,7 +401,7 @@ class Environment:
 
         param_list = func.left
         arg_list = pt.right.left
-        defining_env = pt.right.right
+        defining_env = func.right.right
         new_env = self.extend_env(None, None, defining_env)
         while param_list is not None:
             if arg_list is None:

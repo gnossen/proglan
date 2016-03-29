@@ -4,13 +4,24 @@ from proglan.environment.environment import *
 import sys
 import traceback
 
-env = Environment()
-while True:
-    code = raw_input(">>>")
+if len(sys.argv) < 2:
+    env = Environment()
+    while True:
+        code = raw_input(">>>")
+
+        try:
+            env.load_str(code)
+            print(str(env.evaluate()))
+        except Exception as e:
+            print(str(e))
+            # traceback.print_exc()
+else:
+    code = None
+    with open(sys.argv[1], 'r') as f:
+        code = f.read()
 
     try:
-        env.load_str(code)
+        env = Environment(input=code)
         print(str(env.evaluate()))
     except Exception as e:
         print(str(e))
-        # traceback.print_exc()
