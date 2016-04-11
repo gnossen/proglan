@@ -11,7 +11,7 @@ if len(sys.argv) < 2:
 
         try:
             env.load_str(code)
-            env.evaluate()
+            print(str(env.evaluate()))
         except Exception as e:
             print("Exception: " + str(e))
             # traceback.print_exc()

@@ -171,12 +171,12 @@ class Parser:
                 anon_arg = self.parse_optExprList()
                 self.match(Lexeme.CBRACE)
 
-            return make_funcCall(expr, args, anon_arg)
+            return make_funcCall(self.parse_metaExpr(expr), args, anon_arg)
         elif self.check(Lexeme.OSQBRACE, skip=False):
             self.match(Lexeme.OSQBRACE)
             index_expr = self.parse_expr()
             self.match(Lexeme.CSQBRACE)
-            return make_arrayAccess(expr, index_expr)
+            return make_arrayAccess(self.parse_metaExpr(expr), index_expr)
         elif self.operator_pending():
             operator = self.parse_operator()
             right_expr = self.parse_expr()
