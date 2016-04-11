@@ -1,0 +1,41 @@
+def sort(list)(cmp: a, b) {
+    # implements in-place merge sort
+    def move(src, dst) {
+        def swap(a, b) {
+            let tmp = list[a]      
+            list[a] = list[b]
+            list[b] = tmp
+        } 
+        
+        if (src == dst)
+            return null
+
+        swap(src, src - 1) 
+        move(src - 1, dst)
+    }
+
+    def merge(start, middle, end) {
+        if (start == end) {
+            return null
+        } else if (cmp(start, middle)) {
+            merge(start + 1, middle, end)
+        } else {
+            move(middle, start)
+            merge(start + 1, middle + 1, end)
+        }
+    }
+
+    def subsort(start, end) {
+        if ((start - end) > 1) {
+            let middle = (start + end) / 2
+            subsort(start, middle)
+            subsort(middle + 1, end)
+            merge(start, middle, middle + 1, end)
+        }
+    }
+
+    subsort(0, len(list) - 1)
+}
+
+sort([7, 2, 5, 3, 1, 4, 5, 3]) { a < b }
+sort(["hej", "hi", "hola", "hello"]) { len(a) < len(b) }

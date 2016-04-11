@@ -1,0 +1,8 @@
+def generic(a, b, c)(f: x, y) {
+    f(a, b) + c
+}
+
+generic(1, 2, 3) {
+    x - y
+}
+

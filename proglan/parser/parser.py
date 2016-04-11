@@ -252,11 +252,16 @@ class Parser:
         self.match(Lexeme.OPAREN)
         param_list = self.parse_optParamList()
         self.match(Lexeme.CPAREN)
+
+        func_param = None
+        if self.funcParam_pending():
+            func_param = self.parse_funcParam()
+
         self.match(Lexeme.OBRACE)
         body = self.parse_optExprList()
         self.match(Lexeme.CBRACE)
 
-        return make_anonFunc(param_list, body)
+        return make_anonFunc(param_list, func_param, body)
 
     def arrayLiteral_pending(self):
         return self.check(Lexeme.OSQBRACE)
@@ -291,11 +296,31 @@ class Parser:
         self.match(Lexeme.OPAREN)
         param_list = self.parse_optParamList()
         self.match(Lexeme.CPAREN)
+
+        func_param = None
+        if self.funcParam_pending():
+            func_param = self.parse_funcParam()
+
         self.match(Lexeme.OBRACE)
         expr_list = self.parse_optExprList()
         self.match(Lexeme.CBRACE)
 
-        return make_funcDef(func_name, param_list, expr_list)
+        return make_funcDef(func_name, param_list, func_param, expr_list)
+
+    def funcParam_pending(self):
+        return self.check(Lexeme.OPAREN)
+
+    def parse_funcParam(self):
+        self.match(Lexeme.OPAREN)
+        name = self.match(Lexeme.IDENTIFIER)
+        
+        params = None
+        if self.check(Lexeme.COLON):
+            self.match(Lexeme.COLON)
+            params = self.parse_paramList()
+
+        self.match(Lexeme.CPAREN)
+        return make_funcParam(name, params)
 
     def primary_pending(self):
         return self.check(Lexeme.NUMBER) or \
@@ -392,9 +417,10 @@ class Parser:
 
         return make_argList(arg, sublist)
 
-def make_funcDef(func_name, param_list, expr_list):
-    gen_purp = Lexeme(Lexeme.gen_purp, left=param_list, right=expr_list)
-    return Lexeme(Lexeme.funcDef, left=func_name, right=gen_purp)
+def make_funcDef(func_name, param_list, func_param, expr_list):
+    gen_purp2 = Lexeme(Lexeme.gen_purp, left=func_param, right=expr_list)
+    gen_purp1 = Lexeme(Lexeme.gen_purp, left=param_list, right=gen_purp2)
+    return Lexeme(Lexeme.funcDef, left=func_name, right=gen_purp1)
 
 def make_paramList(param, sublist):
     return Lexeme(Lexeme.paramList, left=param, right=sublist)
@@ -427,8 +453,9 @@ def make_funcCall(func_name, arg_list, anon_arg):
     gen_purp = Lexeme(Lexeme.gen_purp, left=arg_list, right=anon_arg)
     return Lexeme(Lexeme.funcCall, left=func_name, right=gen_purp)
 
-def make_anonFunc(param_list, body):
-    return Lexeme(Lexeme.anonFunc, left=param_list, right=body)
+def make_anonFunc(param_list, func_param, body):
+    gen_purp = Lexeme(Lexeme.gen_purp, left=func_param, right=body)
+    return Lexeme(Lexeme.anonFunc, left=param_list, right=gen_purp)
 
 def make_varAssign(var_name, value):
     return Lexeme(Lexeme.varAssign, left=var_name, right=value)
@@ -444,3 +471,6 @@ def make_list(car, cdr):
 
 def make_returnExpr(expr):
     return Lexeme(Lexeme.returnExpr, left=expr)
+
+def make_funcParam(name, params):
+    return Lexeme(Lexeme.funcParam, left=name, right=params)

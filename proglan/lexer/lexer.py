@@ -8,8 +8,8 @@ class Lexer:
         self.input = input
         self.line = 0
         self.col = 0
-        self.word_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
-        self.word_start_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+        self.word_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$"
+        self.word_start_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
 
     def peek(self):
         try:
@@ -77,6 +77,8 @@ class Lexer:
             return Lexeme(Lexeme.NEQ, line=self.line, col=self.col - 2)
         elif ch == ";":
             return Lexeme(Lexeme.SEMICOLON, line=self.line, col=self.col - 1)
+        elif ch == ":":
+            return Lexeme(Lexeme.COLON, line=self.line, col=self.col - 1)
         elif ch == "&":
             return Lexeme(Lexeme.BITWISE_AND, line=self.line, col=self.col - 1)
         elif ch == "|":

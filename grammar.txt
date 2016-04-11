@@ -53,6 +53,10 @@ varDecl : LET IDENTIFIER
 varAssign : IDENTIFIER EQUAL expression
 
 funcDef : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optExprList CBRACE
+        | DEF IDENTIFIER OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE
+
+funcParam : OPAREN IDENTIFIER CPAREN
+          | OPAREN IDENTIFIER COLON optParamList CPAREN
 
 optParamList : EPSILON
              | paramList
@@ -100,3 +104,4 @@ operator : PLUS
          | NEQ
 
 anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
+                  | LAMBDA OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE

@@ -16,11 +16,13 @@ def test_example1():
     anon_expr_list = Lexeme(Lexeme.exprList, left=prim_expr1)
     x = Lexeme(Lexeme.IDENTIFIER, value="x")
     anon_param = Lexeme(Lexeme.paramList, left=x)
-    anon_func = Lexeme(Lexeme.anonFunc, left=anon_param, right=anon_expr_list)
+    func_gen_purp2 = Lexeme(Lexeme.gen_purp, right=anon_expr_list)
+    anon_func = Lexeme(Lexeme.anonFunc, left=anon_param, right=func_gen_purp2)
     func1_expr_list = Lexeme(Lexeme.exprList, left=anon_func)
+    func_gen_purp =  Lexeme(Lexeme.gen_purp, right=func1_expr_list)
     n = Lexeme(Lexeme.IDENTIFIER, value="n")
     param_n = Lexeme(Lexeme.paramList, left=n)
-    gen_purp1 = Lexeme(Lexeme.gen_purp, left=param_n, right=func1_expr_list)
+    gen_purp1 = Lexeme(Lexeme.gen_purp, left=param_n, right=func_gen_purp)
     multn = Lexeme(Lexeme.IDENTIFIER, value="multn")
     func_def = Lexeme(Lexeme.funcDef, left=multn, right=gen_purp1)
     expected = Lexeme(Lexeme.exprList, left=func_def)
@@ -29,6 +31,7 @@ def test_example1():
 
     ast = parser.parse()
     draw_tree(ast, get_filepath("../../examples/proglan-ast1.png"))
+    draw_tree(expected, get_filepath("../../examples/expected-ast1.png"))
     assert lex_tree_equal(expected, ast)
 
 def test_example2():
@@ -60,7 +63,8 @@ def test_example2():
     expr_list1 = Lexeme(Lexeme.exprList, left=var_decl1, right=expr_list2)
     gen_purp1 = Lexeme(Lexeme.gen_purp, right=expr_list1)
     print_hello = Lexeme(Lexeme.IDENTIFIER, value="printHello")
-    func_def = Lexeme(Lexeme.funcDef, left=print_hello, right=gen_purp1)
+    func_gen_purp = Lexeme(Lexeme.gen_purp, right=gen_purp1)
+    func_def = Lexeme(Lexeme.funcDef, left=print_hello, right=func_gen_purp)
     expected = Lexeme(Lexeme.exprList, left=func_def) 
 
     parser = Parser(file="../../examples/example2.prog")
@@ -81,7 +85,8 @@ def test_example3():
     next_fib3 = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
     func_call3 = Lexeme(Lexeme.funcCall, left=next_fib3, right=gen_purp6)
     expr_list7 = Lexeme(Lexeme.exprList, left=func_call3)
-    anon_func2 = Lexeme(Lexeme.anonFunc, right=expr_list7)
+    func_gen_purp4 = Lexeme(Lexeme.gen_purp, right=expr_list7)
+    anon_func2 = Lexeme(Lexeme.anonFunc, right=func_gen_purp4)
     expr_list3 = Lexeme(Lexeme.exprList, left=anon_func2)
     cur4 = Lexeme(Lexeme.IDENTIFIER, value="cur")
     plus1 = Lexeme(Lexeme.PLUS)
@@ -95,7 +100,8 @@ def test_example3():
     next_fib2 = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
     func_call2 = Lexeme(Lexeme.funcCall, left=next_fib2, right=gen_purp4)
     expr_list6 = Lexeme(Lexeme.exprList, left=func_call2)
-    anon_func1 = Lexeme(Lexeme.anonFunc, right=expr_list6)
+    func_gen_purp3 = Lexeme(Lexeme.gen_purp, right=expr_list6)
+    anon_func1 = Lexeme(Lexeme.anonFunc, right=func_gen_purp3)
     expr_list5 = Lexeme(Lexeme.exprList, left=anon_func1)
     cur2 = Lexeme(Lexeme.IDENTIFIER, value="cur")
     arg_list1 = Lexeme(Lexeme.argList, left=cur2)
@@ -107,25 +113,33 @@ def test_example3():
     param_list3 = Lexeme(Lexeme.paramList, left=cur1)
     prev1 = Lexeme(Lexeme.IDENTIFIER, value="prev")
     param_list2 = Lexeme(Lexeme.paramList, left=prev1, right=param_list3)
-    gen_purp2 = Lexeme(Lexeme.gen_purp, left=param_list2, right=expr_list4)
+    gen_purp2 = Lexeme(Lexeme.gen_purp, right=expr_list4)
     next_fib = Lexeme(Lexeme.IDENTIFIER, value="next_fib")
-    func_def2 = Lexeme(Lexeme.funcDef, left=next_fib, right=gen_purp2)
+    func_gen_purp2 = Lexeme(Lexeme.gen_purp, left=param_list2, right=gen_purp2)
+    func_def2 = Lexeme(Lexeme.funcDef, left=next_fib, right=func_gen_purp2)
     expr_list2 = Lexeme(Lexeme.exprList, left=func_def2, right=expr_list3)
     gen_purp1 = Lexeme(Lexeme.gen_purp, right=expr_list2)
     fib1 = Lexeme(Lexeme.IDENTIFIER, value="fib")
-    func_def = Lexeme(Lexeme.funcDef, left=fib1, right=gen_purp1)
+    func_gen_purp = Lexeme(Lexeme.gen_purp, right=gen_purp1)
+    func_def = Lexeme(Lexeme.funcDef, left=fib1, right=func_gen_purp)
     expected = Lexeme(Lexeme.exprList, left=func_def, right=expr_list1)
 
     parser = Parser(file="../../examples/example3.prog")
 
     ast = parser.parse()
     draw_tree(ast, get_filepath("../../examples/proglan-ast3.png"))
+    draw_tree(expected, get_filepath("../../examples/expected-ast3.png"))
     assert lex_tree_equal(expected, ast)
 
 def test_example6():
     parser = Parser(file="../../examples/example6.prog")
     ast = parser.parse()
     draw_tree(ast, get_filepath("../../examples/proglan-ast6.png"))
+
+def test_example8():
+    parser = Parser(file="../../examples/example8.prog")
+    ast = parser.parse()
+    draw_tree(ast, get_filepath("../../examples/proglan-ast8.png"))
 
 def get_cur_dir():
     return os.path.dirname(os.path.realpath(__file__))
