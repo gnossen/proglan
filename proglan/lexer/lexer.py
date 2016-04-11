@@ -126,7 +126,7 @@ class Lexer:
             return Lexeme(Lexeme.NUMBER, value=int(number), line=self.line, col=self.col - len(number))
         elif ch == '"':
             string = self.lex_string("")
-            return Lexeme(Lexeme.STRING, value=string, line=self.line, col=self.col - len(string) - 2)
+            return Lexeme(Lexeme.STRING, value=string.decode("string-escape"), line=self.line, col=self.col - len(string) - 2)
         else:
             raise Exception("Illegal character '%s' at (%d, %d)." % (ch, self.line + 1, self.col + 1))
 

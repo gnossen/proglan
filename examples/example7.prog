@@ -1,0 +1,18 @@
+def f() {
+    let i = 0
+    while(i < 5) {
+        if (i == 4) {
+            return i
+        }
+        i = i + 1
+    }
+}
+
+def g() {
+    let i = 0
+    if(i == 0) { return 2 }
+    3
+}
+
+print(f(), "\n")
+print(g(), "\n")

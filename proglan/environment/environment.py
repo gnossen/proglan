@@ -153,6 +153,8 @@ class Environment:
             return self.evalArrayLiteral(pt, env)
         elif pt.type == Lexeme.arrayAccess:
             return self.evalArrayAccess(pt, env)
+        elif pt.type == Lexeme.returnExpr:
+            return make_returnExpr(self.eval(pt.left, env))
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
@@ -420,6 +422,8 @@ class Environment:
         while self.coerceBool(self.eval(cond_expr, env)).value == True:
             new_env = self.extend_env(None, None, env)
             res = self.eval(body, new_env)
+            if res.type == Lexeme.returnExpr:
+                return res
 
         return res
 
