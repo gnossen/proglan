@@ -149,6 +149,10 @@ class Parser:
         elif self.arrayLiteral_pending():
             arrayLiteral = self.parse_arrayLiteral()
             return self.parse_metaExpr(arrayLiteral)
+        elif self.check(Lexeme.RETURN):
+            self.match(Lexeme.RETURN)
+            expr = self.parse_expr()
+            return make_returnExpr(expr)
         else:
             self.match(Lexeme.OPAREN)
             expr = self.parse_expr()
@@ -437,4 +441,6 @@ def make_arrayLiteral(members):
 
 def make_list(car, cdr):
     return Lexeme(Lexeme.gen_purp, left=car, right=cdr)
-cdr = None
+
+def make_returnExpr(expr):
+    return Lexeme(Lexeme.returnExpr, left=expr)

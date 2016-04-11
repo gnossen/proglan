@@ -2,6 +2,7 @@ import os
 from ..lexer.lexeme import *
 from ..parser.parser import *
 import time
+import sys
 
 class Environment:
     def __init__(self, input=None, file=None):
@@ -28,7 +29,12 @@ class Environment:
         return Lexeme(Lexeme.env, left=var_names, right=join1)
 
     def create_env(self):
-        return self.extend_env(None, None, None)
+        env = self.extend_env(None, None, None)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
+                    Lexeme(Lexeme.builtIn, left=self.printFunc),
+                    env)
+
+        return env
 
     def insert(self, identifier, val, env):
         ids = env.left
@@ -89,6 +95,32 @@ class Environment:
             
         return False
 
+    def printFunc(self, arg_tree, env):
+        if arg_tree is None:
+            return Lexeme(Lexeme.NULL)
+
+        car = arg_tree.left
+        cdr = arg_tree.right
+
+        sys.stdout.write(self.pretty_print(car, env))
+        return self.printFunc(cdr, env)
+
+    def pretty_print(self, arg, env):
+        val = self.eval(arg, env)
+        if val.type == Lexeme.NUMBER:
+            return str(val.value)
+        elif val.type == Lexeme.STRING:
+            return val.value
+        elif val.type == Lexeme.BOOL:
+            if val.value == True:
+                return "true"
+            else:
+                return "false"
+        elif val.type == Lexeme.NULL:
+            return "null"
+        else:
+            return str(val)
+
     def evaluate(self):
         root = Parser(input=self.input).parse()
         return self.eval(root, self.env)
@@ -98,11 +130,7 @@ class Environment:
         if pt.type in primitives:
             return pt
         elif pt.type == Lexeme.exprList:
-            if pt.right is None:
-                return self.eval(pt.left, env)
-            else:
-                self.eval(pt.left, env)
-                return self.eval(pt.right, env)
+            return self.evalExprList(pt, env)
         elif pt.type == Lexeme.primExpr:
             return self.evalPrimExpr(pt, env)
         elif pt.type == Lexeme.varDecl:
@@ -127,6 +155,16 @@ class Environment:
             return self.evalArrayAccess(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
+
+    def evalExprList(self, pt, env):
+        if pt.right is None:
+            return self.eval(pt.left, env)
+        else:
+            cur = self.eval(pt.left, env)
+            if cur.type == Lexeme.returnExpr:
+                return cur
+
+            return self.eval(pt.right, env)
 
     def evalVarDecl(self, pt, env):
         if self.varDefined(pt.left, env):
@@ -396,6 +434,10 @@ class Environment:
 
     def evalFuncCall(self, pt, env):
         func = self.eval(pt.left, env)
+        
+        if func.type == Lexeme.builtIn:
+            return func.left(pt.right.left, env)
+
         if func.type != Lexeme.function:
             raise Exception("Attempted to call non-function %s." % str(func))
 
@@ -418,7 +460,12 @@ class Environment:
             raise Exception("Too many arguments supplied to %s" % str(pt))
 
         body = func.right.left
-        return self.eval(body, new_env)
+        res = self.eval(body, new_env)
+
+        if res.type == Lexeme.returnExpr:
+            return res.left
+
+        return res
 
     def evalArrayLiteral(self, pt, env):
         arr = []

@@ -24,6 +24,7 @@ expr: primary metaExpr
     | varAssign metaExpr
     | arrayLiteral metaExpr
     | OPAREN expr CPAREN metaExpr
+    | RETURN expr
 
 metaExpr: OPAREN optArgList CPAREN metaExpr
         | OPAREN optArgList CPAREN OBRACE optExprList CBRACE metaExpr
@@ -31,7 +32,6 @@ metaExpr: OPAREN optArgList CPAREN metaExpr
         | operator expr metaExpr
         | EPSILON
 
-returnExpr : RETURN expr
 
 arrayLiteral : OSQBRACE optCommaExprList CSQBRACE
 

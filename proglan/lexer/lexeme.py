@@ -68,6 +68,8 @@ class Lexeme:
     env =           61
     function =      62
     array =         63
+    returnExpr =    64
+    builtIn =       65
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 
