@@ -141,6 +141,11 @@ def test_example8():
     ast = parser.parse()
     draw_tree(ast, get_filepath("../../examples/proglan-ast8.png"))
 
+def test_example11():
+    parser = Parser(file="../../examples/example11.prog")
+    ast = parser.parse()
+    draw_tree(ast, get_filepath("../../examples/proglan-ast11.png"))
+
 def get_cur_dir():
     return os.path.dirname(os.path.realpath(__file__))
 

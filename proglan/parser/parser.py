@@ -121,14 +121,6 @@ class Parser:
 
     def parse_expr(self):
         if self.primary_pending():
-            if self.check(Lexeme.IDENTIFIER):
-                identifier = self.match(Lexeme.IDENTIFIER)
-
-                if self.check(Lexeme.EQUAL):
-                    return self.parse_varAssign(identifier)
-                else:
-                    return self.parse_metaExpr(identifier)
-
             prim = self.parse_primary()
             return self.parse_metaExpr(prim)
         elif self.ifExpr_pending():
@@ -160,7 +152,11 @@ class Parser:
             return self.parse_metaExpr(expr)
 
     def parse_metaExpr(self, expr):
-        if self.check(Lexeme.OPAREN, skip=False):
+        if self.check(Lexeme.EQUAL):
+            self.match(Lexeme.EQUAL)
+            new_val = self.parse_expr()
+            return make_varAssign(expr, new_val)
+        elif self.check(Lexeme.OPAREN, skip=False):
             self.match(Lexeme.OPAREN)
             args = self.parse_optArgList()
             self.match(Lexeme.CPAREN)
@@ -171,12 +167,12 @@ class Parser:
                 anon_arg = self.parse_optExprList()
                 self.match(Lexeme.CBRACE)
 
-            return make_funcCall(self.parse_metaExpr(expr), args, anon_arg)
+            return self.parse_metaExpr(make_funcCall(expr, args, anon_arg))
         elif self.check(Lexeme.OSQBRACE, skip=False):
             self.match(Lexeme.OSQBRACE)
             index_expr = self.parse_expr()
             self.match(Lexeme.CSQBRACE)
-            return make_arrayAccess(self.parse_metaExpr(expr), index_expr)
+            return self.parse_metaExpr(make_arrayAccess(expr, index_expr))
         elif self.operator_pending():
             operator = self.parse_operator()
             right_expr = self.parse_expr()

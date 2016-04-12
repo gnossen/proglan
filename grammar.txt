@@ -6,13 +6,13 @@ expr: primitive
     | varDecl
     | anonFunc
     | funcDef
-    | varAssign
     | arrayLiteral
     | OPAREN expr CPAREN                                        // parenthesized expression
     | expr OPAREN optArgList CPAREN                             // function call
     | expr OPAREN optArgList CPAREN OBRACE optExprList CBRACE   // higher order function call
     | expr OSQBRACE expr CSQBRACE                               // array access
     | expr OPERATOR expr                                        // binary operator expression
+    | expr EQUALS expr
 
 // after removing left recursion
 expr: primary metaExpr
@@ -21,7 +21,6 @@ expr: primary metaExpr
     | varDecl metaExpr
     | anonFunc metaExpr
     | funcDef metaExpr
-    | varAssign metaExpr
     | arrayLiteral metaExpr
     | OPAREN expr CPAREN metaExpr
     | RETURN expr
@@ -29,7 +28,8 @@ expr: primary metaExpr
 metaExpr: OPAREN optArgList CPAREN metaExpr
         | OPAREN optArgList CPAREN OBRACE optExprList CBRACE metaExpr
         | OSQBRACE expr CSQBRACE metaExpr
-        | operator expr metaExpr
+        | operator expr
+        | EQUALS expr
         | EPSILON
 
 
@@ -49,8 +49,6 @@ commaExprList : expr
 
 varDecl : LET IDENTIFIER
         | LET IDENTIFIER EQUAL expression
-
-varAssign : IDENTIFIER EQUAL expression
 
 funcDef : DEF IDENTIFIER OPAREN optParamList CPAREN OBRACE optExprList CBRACE
         | DEF IDENTIFIER OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE

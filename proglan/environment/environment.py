@@ -233,11 +233,17 @@ class Environment:
         return right
 
     def evalVarAssign(self, pt, env):
-        # if not self.varDefined(pt.left, env):
-        #     raise Exception("Referenced undefined variable %s." % str(pt.left))
+        new_val = right = self.eval(pt.right, env)
+        lval = pt.left
+        if lval.type == Lexeme.arrayAccess:
+            arr = self.eval(lval.left, env)
+            index = self.eval(lval.right, env)
+            arr.value[index.value] = new_val
+        elif lval.type == Lexeme.IDENTIFIER:
+            self.assign(lval, new_val, env)
+        else:
+            raise Exception("Attempted to use %s as lvalue in assignment." % pt)
 
-        right = self.eval(pt.right, env)
-        self.assign(pt.left, right, env)
         return right
 
     def evalPrimExpr(self, pt, env):
