@@ -14,8 +14,11 @@ class Parser:
             self.input = None
 
     def load_file(self, filename):
-        cur_dir = os.path.dirname(os.path.realpath(__file__))
-        filepath = os.path.join(cur_dir, filename)
+        filepath = filename
+        if not os.path.isabs(filename):
+            cur_dir = os.path.dirname(os.path.realpath(__file__))
+            filepath = os.path.join(cur_dir, filename)
+
         with open(filepath, 'r') as f:
             self.input = f.read()
 

@@ -16,12 +16,10 @@ if len(sys.argv) < 2:
             print("Exception: " + str(e))
             traceback.print_exc()
 else:
-    code = None
-    with open(sys.argv[1], 'r') as f:
-        code = f.read()
+    filepath = os.path.abspath(sys.argv[1])
 
     try:
-        env = Environment(input=code)
+        env = Environment(file=filepath)
         env.evaluate()
     except Exception as e:
         traceback.print_exc()

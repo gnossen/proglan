@@ -17,8 +17,11 @@ class Environment:
             self.input = None
     
     def load_file(self, filename):
-        cur_dir = os.path.dirname(os.path.realpath(__file__))
-        filepath = os.path.join(cur_dir, filename)
+        filepath = filename
+        if not os.path.isabs(filename):
+            cur_dir = os.path.dirname(os.path.realpath(__file__))
+            filepath = os.path.join(cur_dir, filename)
+                
         with open(filepath, 'r') as f:
             self.input = f.read()
 
@@ -32,6 +35,9 @@ class Environment:
 
     def create_env(self):
         env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL))
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="import"),
+                    Lexeme(Lexeme.builtIn, left=self.import_func),
+                    env)
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
                     Lexeme(Lexeme.builtIn, left=self.printFunc),
                     env)
@@ -114,6 +120,39 @@ class Environment:
             
         return False
 
+    def get_arg_count(self, arg_tree):
+        if arg_tree is None:
+            return 0
+
+        return self.get_arg_count(arg_tree.right) + 1
+
+    def check_num_args(self, func_name, arg_tree, expected_arg_count):
+        arg_count = self.get_arg_count(arg_tree) 
+        expected_str = "Expected %d but found %d." % (expected_arg_count, arg_count)
+        if arg_count > expected_arg_count:
+            raise Exception("Too many arguments to %s. %s" % (func_name, expected_str))
+        elif arg_count < expected_arg_count:
+            raise Exception("Too many arguments to %s. %s" % (func_name, expected_str))
+
+    def get_path(self, filename):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        if self.file is not None:
+            cur_dir = os.path.dirname(self.file)
+
+        return os.path.join(cur_dir, filename)
+
+    def import_func(self, arg_tree, env):
+        self.check_num_args("import", arg_tree, 1)
+        filename = self.eval(arg_tree.left, env)
+
+        if filename.type != Lexeme.STRING:
+            raise Exception("Import path must be a string.")
+
+        path = self.get_path(filename.value) 
+
+        ast = Parser(file=path).parse()
+        return self.eval(ast, self.env)
+
     def printlnFunc(self, arg_tree, env):
         res = self.printFunc(arg_tree, env)
         sys.stdout.write("\n")
@@ -130,17 +169,10 @@ class Environment:
         return self.printFunc(cdr, env)
 
     def array_append(self, args, env):
-        if args is None:
-            raise Exception("No argument to append.")
+        self.check_num_args("append", args, 2)
 
-        car = args.left
-        cdr = args.right
-
-        if cdr is None or cdr.left is None:
-            raise Exception("Must supply element to be appended.")
-
-        arr = self.eval(car, env)
-        val = self.eval(cdr.left, env)
+        arr = self.eval(args.left, env)
+        val = self.eval(args.right.left, env)
 
         if arr.type != Lexeme.array:
             raise Exception("Attempted to append to non-array.")
@@ -149,18 +181,12 @@ class Environment:
         return val
 
     def len_func(self, args, env):
-        if args is None:
-            raise Exception("No arguments to len.")
-
-        car = args.left
-        cdr = args.right
-        
-        if cdr is not None:
-            raise Exception("Too many arguments to len.")
-        
+        self.check_num_args("len", args, 1)       
         val = self.eval(args.left, env)
         if val.type == Lexeme.STRING or val.type == Lexeme.array:
             return Lexeme(Lexeme.NUMBER, value=len(val.value))
+        else:
+            raise Exception("Cannot apply 'len' to %s." % str(val))
 
     def pretty_print(self, arg, env):
         val = self.eval(arg, env)
@@ -211,43 +237,26 @@ class Environment:
             return str(val)
 
     def cons_func(self, args, env):
-        if args is None:
-            raise Exception("Not enough arguments to cons.")
-
-        arg1 = args.left
-        if arg1 is None or arg1.type == Lexeme.NULL:
-            raise Exception("Cannot cons to null.")
-
+        self.check_num_args("cons", args, 2)
         arg1 = self.eval(args.left, env)
-
-        if args.right is None:
-            raise Exception("Not enough arguments to cons.")
-
         arg2 = self.eval(args.right.left, env)
 
         return Lexeme(Lexeme.cons, left=arg1, right=arg2)
 
     def car_func(self, args, env):
-        if args is None:
-            raise Exception("Not enough arguments to car.")
-
+        self.check_num_args("car", args, 1)
         arg1 = args.left
+        arg1 = self.eval(args.left, env)
         if arg1 is None or arg1.type == Lexeme.NULL:
             raise Exception("Cannot take car of null.")
-
-        arg1 = self.eval(arg1, env)
 
         return arg1.left
 
     def cdr_func(self, args, env):
-        if args is None:
-            raise Exception("Not enough arguments to cdr.")
-
-        arg1 = args.left
+        self.check_num_args("cdr", args, 1)
+        arg1 = self.eval(args.left, env)
         if arg1 is None or arg1.type == Lexeme.NULL:
             raise Exception("Cannot take cdr of null.")
-
-        arg1 = self.eval(arg1, env)
 
         return arg1.right
 

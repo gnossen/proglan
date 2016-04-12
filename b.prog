@@ -1,0 +1,5 @@
+def times_two(x) {
+    2 * x
+}
+
+println("Importing 'b.prog.'")
