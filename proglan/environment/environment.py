@@ -26,12 +26,12 @@ class Environment:
         self.input = str
 
     def extend_env(self, var_names, vals, definingEnv):
-        join2 = Lexeme(Lexeme.gen_purp, left=definingEnv)
-        join1 = Lexeme(Lexeme.gen_purp, left=vals, right=join2)
-        return Lexeme(Lexeme.env, left=var_names, right=join1)
+        join2 = Lexeme(Lexeme.cons, left=definingEnv, right=Lexeme(Lexeme.NULL))
+        join1 = Lexeme(Lexeme.cons, left=vals, right=join2)
+        return Lexeme(Lexeme.cons, left=var_names, right=join1)
 
     def create_env(self):
-        env = self.extend_env(None, None, None)
+        env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL))
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
                     Lexeme(Lexeme.builtIn, left=self.printFunc),
                     env)
@@ -59,8 +59,8 @@ class Environment:
         ids = env.left
         vals = env.right.left
 
-        id_join = Lexeme(Lexeme.gen_purp, left=ids, right=identifier)
-        val_join = Lexeme(Lexeme.gen_purp, left=vals, right=val)
+        id_join = Lexeme(Lexeme.cons, left=identifier, right=ids)
+        val_join = Lexeme(Lexeme.cons, left=val, right=vals)
 
         env.left = id_join
         env.right.left = val_join
@@ -70,16 +70,16 @@ class Environment:
         vals = env.right.left
         defining_env = env.right.right.left
 
-        while ids is not None:
-            cur_id = ids.right
+        while ids.type != Lexeme.NULL:
+            cur_id = ids.left
             if identifier.value == cur_id.value:
-                vals.right = val
+                vals.left = val
                 return val
 
-            ids = ids.left
-            vals = vals.left
+            ids = ids.right
+            vals = vals.right
 
-        if defining_env is not None:
+        if defining_env.type != Lexeme.NULL:
             return self.assign(identifier, val, defining_env)
         else:
             raise Exception("Attempted to assign to undefined variable %s." % identifier)
@@ -89,16 +89,16 @@ class Environment:
         vals = env.right.left
         defining_env = env.right.right.left
 
-        while ids is not None:
-            cur_id = ids.right
-            cur_val = vals.right
+        while ids.type != Lexeme.NULL:
+            cur_id = ids.left
+            cur_val = vals.left
             if identifier.value == cur_id.value:
                 return cur_val
 
-            ids = ids.left
-            vals = vals.left
+            ids = ids.right
+            vals = vals.right
         else:
-            if defining_env is not None:
+            if defining_env.type != Lexeme.NULL:
                 return self.lookup(identifier, defining_env)
 
             raise Exception("Undefined variable %s." % identifier)
@@ -106,11 +106,11 @@ class Environment:
     def varDefined(self, identifier, env):
         ids = env.left
 
-        while ids is not None:
-            if identifier.value == ids.right.value:
+        while ids.type != Lexeme.NULL:
+            if identifier.value == ids.left.value:
                 return True
 
-            ids = ids.left
+            ids = ids.right
             
         return False
 
@@ -289,6 +289,8 @@ class Environment:
         elif pt.type == Lexeme.returnExpr:
             return make_returnExpr(self.eval(pt.left, env))
         elif pt.type == Lexeme.NULL:
+            return pt
+        elif pt.type == Lexeme.builtIn:
             return pt
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
@@ -561,7 +563,7 @@ class Environment:
 
         res = Lexeme(Lexeme.NULL)
         while self.coerceBool(self.eval(cond_expr, env)).value == True:
-            new_env = self.extend_env(None, None, env)
+            new_env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), env)
             res = self.eval(body, new_env)
             if res.type == Lexeme.returnExpr:
                 return res
@@ -590,7 +592,7 @@ class Environment:
         param_list = func.left
         arg_list = pt.right.left
         defining_env = func.right.right.right
-        new_env = self.extend_env(None, None, defining_env)
+        new_env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), defining_env)
         while param_list is not None:
             if arg_list is None:
                 raise Exception("Not enough arguments supplied to %s" % str(pt))
