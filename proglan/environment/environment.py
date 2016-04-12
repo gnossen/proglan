@@ -430,9 +430,10 @@ class Environment:
     def evalFuncDef(self, pt, env):
         name = pt.left
         param_list = pt.right.left
-        body = pt.right.right
+        func_param = pt.right.right.left
+        body = pt.right.right.right
 
-        func = self.make_function(param_list, body, env)
+        func = self.make_function(param_list, func_param, body, env)
         self.insert(name, func, env)
         return func
 
@@ -447,7 +448,7 @@ class Environment:
 
         param_list = func.left
         arg_list = pt.right.left
-        defining_env = func.right.right
+        defining_env = func.right.right.right
         new_env = self.extend_env(None, None, defining_env)
         while param_list is not None:
             if arg_list is None:
@@ -463,7 +464,18 @@ class Environment:
         if arg_list is not None:
             raise Exception("Too many arguments supplied to %s" % str(pt))
 
-        body = func.right.left
+        func_param = func.right.left
+        func_arg = pt.right.right
+        if func_param is not None:
+            if func_arg is None:
+                raise Exception("No function parameter supplied to %s" % str(pt))
+            
+            func_name = func_param.left
+            func_param_params = func_param.right
+            arg_func = self.make_function(func_param_params, None, func_arg, env)
+            self.insert(func_name, arg_func, new_env)
+
+        body = func.right.right.left
         res = self.eval(body, new_env)
 
         if res.type == Lexeme.returnExpr:
@@ -496,9 +508,13 @@ class Environment:
         return arr.value[index.value]
 
     def evalAnonFunc(self, pt, env):
-       return self.make_function(pt.left, pt.right, env) 
+        params = pt.left
+        func_param = pt.right.left
+        body = pt.right.right
+        return self.make_function(params, func_param, body, env) 
 
-    def make_function(self, param_list, body, env):
-        join = Lexeme(Lexeme.gen_purp, left=body, right=env)
+    def make_function(self, param_list, func_param, body, env):
+        join2 = Lexeme(Lexeme.gen_purp, left=body, right=env)
+        join = Lexeme(Lexeme.gen_purp, left=func_param, right=join2)
         return Lexeme(Lexeme.function, left=param_list, right=join)
     

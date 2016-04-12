@@ -1,8 +1,15 @@
-def generic(a, b, c)(f: x, y) {
-    f(a, b) + c
+def repeat(n)(f: counter) {
+    let i = 0
+    while (i < n) {
+       f(i) 
+       i = i + 1
+    }
 }
 
-generic(1, 2, 3) {
-    x - y
+repeat(10) {
+    print(counter, "\n")
 }
 
+repeat(3) {
+    print("Hello world.\n")
+}
