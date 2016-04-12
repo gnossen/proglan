@@ -1,0 +1,12 @@
+let arr = []
+append(arr, 1)
+println(arr)
+append(arr, 2)
+println(arr)
+
+let b = [0, 1, 2]
+append(arr, b)
+println(arr)
+
+println("Length of arr: ", len(arr))
+println("Length of b: ", len(arr[2]))

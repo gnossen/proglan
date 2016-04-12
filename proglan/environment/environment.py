@@ -33,6 +33,15 @@ class Environment:
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
                     Lexeme(Lexeme.builtIn, left=self.printFunc),
                     env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="println"),
+                    Lexeme(Lexeme.builtIn, left=self.printlnFunc),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="append"),
+                    Lexeme(Lexeme.builtIn, left=self.array_append),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="len"),
+                    Lexeme(Lexeme.builtIn, left=self.len_func),
+                    env)
 
         return env
 
@@ -95,6 +104,11 @@ class Environment:
             
         return False
 
+    def printlnFunc(self, arg_tree, env):
+        res = self.printFunc(arg_tree, env)
+        sys.stdout.write("\n")
+        return res
+
     def printFunc(self, arg_tree, env):
         if arg_tree is None:
             return Lexeme(Lexeme.NULL)
@@ -104,6 +118,39 @@ class Environment:
 
         sys.stdout.write(self.pretty_print(car, env))
         return self.printFunc(cdr, env)
+
+    def array_append(self, args, env):
+        if args is None:
+            raise Exception("No argument to append.")
+
+        car = args.left
+        cdr = args.right
+
+        if cdr is None or cdr.left is None:
+            raise Exception("Must supply element to be appended.")
+
+        arr = self.eval(car, env)
+        val = self.eval(cdr.left, env)
+
+        if arr.type != Lexeme.array:
+            raise Exception("Attempted to append to non-array.")
+
+        arr.value.append(val)
+        return val
+
+    def len_func(self, args, env):
+        if args is None:
+            raise Exception("No arguments to len.")
+
+        car = args.left
+        cdr = args.right
+        
+        if cdr is not None:
+            raise Exception("Too many arguments to len.")
+        
+        val = self.eval(args.left, env)
+        if val.type == Lexeme.STRING or val.type == Lexeme.array:
+            return Lexeme(Lexeme.NUMBER, value=len(val.value))
 
     def pretty_print(self, arg, env):
         val = self.eval(arg, env)
@@ -118,6 +165,15 @@ class Environment:
                 return "false"
         elif val.type == Lexeme.NULL:
             return "null"
+        elif val.type == Lexeme.array:
+            s = "["
+            for i, elem in enumerate(val.value):
+                s += self.pretty_print(elem, env)
+                if i != len(val.value) - 1:
+                    s += ", "
+
+            s += "]"
+            return s
         else:
             return str(val)
 
@@ -126,7 +182,7 @@ class Environment:
         return self.eval(root, self.env)
 
     def eval(self, pt, env):
-        primitives = [Lexeme.NUMBER, Lexeme.STRING, Lexeme.BOOL]
+        primitives = [Lexeme.NUMBER, Lexeme.STRING, Lexeme.BOOL, Lexeme.array]
         if pt.type in primitives:
             return pt
         elif pt.type == Lexeme.exprList:
