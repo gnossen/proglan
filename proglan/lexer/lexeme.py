@@ -72,6 +72,7 @@ class Lexeme:
     returnExpr =    65
     builtIn =       66
     funcParam =     67
+    cons =          68
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 

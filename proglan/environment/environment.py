@@ -7,9 +7,11 @@ import sys
 class Environment:
     def __init__(self, input=None, file=None):
         self.env = self.create_env()
+        self.file = None
         if input is not None:
             self.load_str(input)
         elif file is not None:
+            self.file = file
             self.load_file(file)
         else:
             self.input = None
@@ -42,7 +44,15 @@ class Environment:
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="len"),
                     Lexeme(Lexeme.builtIn, left=self.len_func),
                     env)
-
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="cons"),
+                    Lexeme(Lexeme.builtIn, left=self.cons_func),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="car"),
+                    Lexeme(Lexeme.builtIn, left=self.car_func),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="cdr"),
+                    Lexeme(Lexeme.builtIn, left=self.cdr_func),
+                    env)
         return env
 
     def insert(self, identifier, val, env):
@@ -174,15 +184,79 @@ class Environment:
 
             s += "]"
             return s
+        elif val.type == Lexeme.cons:
+            cur = val
+            s = "("
+            i = 0
+            while cur.type != Lexeme.NULL:
+                if i != 0:
+                    if cur.type == Lexeme.cons:
+                        s += ", "
+                    else:
+                        s += " . "
+
+                if cur.type == Lexeme.cons:
+                    s += self.pretty_print(cur.left, env)
+                    cur = cur.right
+                else:
+                    s += self.pretty_print(cur, env)
+                    break
+
+                i += 1
+
+            s += ")"
+            return s
+
         else:
             return str(val)
+
+    def cons_func(self, args, env):
+        if args is None:
+            raise Exception("Not enough arguments to cons.")
+
+        arg1 = args.left
+        if arg1 is None or arg1.type == Lexeme.NULL:
+            raise Exception("Cannot cons to null.")
+
+        arg1 = self.eval(args.left, env)
+
+        if args.right is None:
+            raise Exception("Not enough arguments to cons.")
+
+        arg2 = self.eval(args.right.left, env)
+
+        return Lexeme(Lexeme.cons, left=arg1, right=arg2)
+
+    def car_func(self, args, env):
+        if args is None:
+            raise Exception("Not enough arguments to car.")
+
+        arg1 = args.left
+        if arg1 is None or arg1.type == Lexeme.NULL:
+            raise Exception("Cannot take car of null.")
+
+        arg1 = self.eval(arg1, env)
+
+        return arg1.left
+
+    def cdr_func(self, args, env):
+        if args is None:
+            raise Exception("Not enough arguments to cdr.")
+
+        arg1 = args.left
+        if arg1 is None or arg1.type == Lexeme.NULL:
+            raise Exception("Cannot take cdr of null.")
+
+        arg1 = self.eval(arg1, env)
+
+        return arg1.right
 
     def evaluate(self):
         root = Parser(input=self.input).parse()
         return self.eval(root, self.env)
 
     def eval(self, pt, env):
-        primitives = [Lexeme.NUMBER, Lexeme.STRING, Lexeme.BOOL, Lexeme.array]
+        primitives = [Lexeme.NUMBER, Lexeme.STRING, Lexeme.BOOL, Lexeme.array, Lexeme.cons]
         if pt.type in primitives:
             return pt
         elif pt.type == Lexeme.exprList:
@@ -194,7 +268,10 @@ class Environment:
         elif pt.type == Lexeme.varAssign:
             return self.evalVarAssign(pt, env)
         elif pt.type == Lexeme.IDENTIFIER:
-            return self.lookup(pt, env)
+            if pt.value == "this":
+                return env
+            else:
+                return self.lookup(pt, env)
         elif pt.type == Lexeme.ifExpr:
             return self.evalIfExpr(pt, env)
         elif pt.type == Lexeme.whileExpr:
@@ -211,6 +288,8 @@ class Environment:
             return self.evalArrayAccess(pt, env)
         elif pt.type == Lexeme.returnExpr:
             return make_returnExpr(self.eval(pt.left, env))
+        elif pt.type == Lexeme.NULL:
+            return pt
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 

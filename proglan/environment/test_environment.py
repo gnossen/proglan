@@ -17,3 +17,10 @@ def test_example8(capsys):
     out, err = capsys.readouterr()
     assert err == ""
     assert out == "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nHello world.\nHello world.\nHello world.\n"
+
+def test_example12(capsys):
+    env = Environment(file="../../examples/example12.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "3\n2\nnull\n"

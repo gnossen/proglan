@@ -1,0 +1,7 @@
+let k = cons(2, null)
+let g = cons(3, k)
+println(car(g))
+println(car(cdr(g)))
+println(cdr(cdr(g)))
+
+println(cons(cons(2, null), cons(2, null))) 

@@ -14,7 +14,7 @@ if len(sys.argv) < 2:
             print(str(env.evaluate()))
         except Exception as e:
             print("Exception: " + str(e))
-            # traceback.print_exc()
+            traceback.print_exc()
 else:
     code = None
     with open(sys.argv[1], 'r') as f:

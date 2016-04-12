@@ -30,7 +30,7 @@ def sort(list)(cmp: a, b) {
             let middle = (start + end) / 2
             subsort(start, middle)
             subsort(middle + 1, end)
-            merge(start, middle, middle + 1, end)
+            merge(start, middle, end)
         }
     }
 
