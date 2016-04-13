@@ -1,0 +1,6 @@
+def list_len(list) {
+    if(list == null) { 0 } 
+    else {
+        list_len(cdr(list)) + 1
+    }
+}

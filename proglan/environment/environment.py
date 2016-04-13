@@ -135,7 +135,7 @@ class Environment:
             raise Exception("Too many arguments to %s. %s" % (func_name, expected_str))
 
     def get_path(self, filename):
-        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        cur_dir = os.getcwd()
         if self.file is not None:
             cur_dir = os.path.dirname(self.file)
 

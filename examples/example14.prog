@@ -1,7 +1,7 @@
 let Dog = lambda(name) {
     this.name = name 
     this.bark = lambda() {
-        println("Bark.")
+        println("Bark!")
     }
     this
 }
