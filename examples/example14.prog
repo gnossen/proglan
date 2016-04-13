@@ -1,0 +1,13 @@
+let Dog = lambda(name) {
+    this.name = name 
+    this.bark = lambda() {
+        println("Bark.")
+    }
+    this
+}
+
+let dog = Dog("Rover")
+println(dog.name)
+dog.bark()
+dog.name = "Spot"
+println(dog.name)

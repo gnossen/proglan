@@ -295,6 +295,8 @@ class Environment:
             return self.evalArrayLiteral(pt, env)
         elif pt.type == Lexeme.arrayAccess:
             return self.evalArrayAccess(pt, env)
+        elif pt.type == Lexeme.attribAccess:
+            return self.evalAttribAccess(pt, env)
         elif pt.type == Lexeme.returnExpr:
             return make_returnExpr(self.eval(pt.left, env))
         elif pt.type == Lexeme.NULL:
@@ -329,6 +331,15 @@ class Environment:
             arr = self.eval(lval.left, env)
             index = self.eval(lval.right, env)
             arr.value[index.value] = new_val
+        elif lval.type == Lexeme.attribAccess:
+            obj = self.eval(lval.left, env)
+            attr = lval.right
+
+            if not self.varDefined(attr, obj):
+                self.insert(attr, new_val, obj)
+            else:
+                self.assign(attr, new_val, obj)
+
         elif lval.type == Lexeme.IDENTIFIER:
             self.assign(lval, new_val, env)
         else:
@@ -664,6 +675,11 @@ class Environment:
         func_param = pt.right.left
         body = pt.right.right
         return self.make_function(params, func_param, body, env) 
+
+    def evalAttribAccess(self, pt, env):
+        obj = self.eval(pt.left, env)
+        attr = pt.right
+        return self.lookup(attr, obj)
 
     def make_function(self, param_list, func_param, body, env):
         join2 = Lexeme(Lexeme.gen_purp, left=body, right=env)
