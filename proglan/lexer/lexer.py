@@ -52,6 +52,8 @@ class Lexer:
             return Lexeme(Lexeme.CSQBRACE, line=self.line, col=self.col - 1)
         elif ch == ",":
             return Lexeme(Lexeme.COMMA, line=self.line, col=self.col - 1)
+        elif ch == ".":
+            return Lexeme(Lexeme.DOT, line=self.line, col=self.col - 1)
         elif ch == "+":
             return Lexeme(Lexeme.PLUS, line=self.line, col=self.col - 1)
         elif ch == "-":

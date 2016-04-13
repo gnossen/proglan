@@ -25,7 +25,8 @@ expr: primary metaExpr
     | OPAREN expr CPAREN metaExpr
     | RETURN expr
 
-metaExpr: OPAREN optArgList CPAREN metaExpr
+metaExpr: DOT IDENTIFIER metaExpr
+        | OPAREN optArgList CPAREN metaExpr
         | OPAREN optArgList CPAREN OBRACE optExprList CBRACE metaExpr
         | OSQBRACE expr CSQBRACE metaExpr
         | operator expr

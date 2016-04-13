@@ -159,6 +159,10 @@ class Parser:
             self.match(Lexeme.EQUAL)
             new_val = self.parse_expr()
             return make_varAssign(expr, new_val)
+        elif self.check(Lexeme.DOT, skip=False):
+            self.match(Lexeme.DOT)
+            attr = self.match(Lexeme.IDENTIFIER)
+            return self.parse_metaExpr(make_attribAccess(expr, attr))
         elif self.check(Lexeme.OPAREN, skip=False):
             self.match(Lexeme.OPAREN)
             args = self.parse_optArgList()
@@ -473,3 +477,6 @@ def make_returnExpr(expr):
 
 def make_funcParam(name, params):
     return Lexeme(Lexeme.funcParam, left=name, right=params)
+
+def make_attribAccess(obj, attr):
+    return Lexeme(Lexeme.attribAccess, left=obj, right=attr)
