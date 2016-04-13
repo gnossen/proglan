@@ -1,9 +1,9 @@
 def fib() {
     def next_fib(prev, cur) {
         print(cur)
-        lambda() {next_fib(cur, prev + cur)}
+        def() {next_fib(cur, prev + cur)}
     }
-    lambda() {next_fib(0, 1)}
+    def() {next_fib(0, 1)}
 }
 
 (fib())

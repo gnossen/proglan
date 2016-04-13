@@ -126,6 +126,12 @@ class Parser:
         if self.primary_pending():
             prim = self.parse_primary()
             return self.parse_metaExpr(prim)
+        if self.check(Lexeme.DEF):
+            self.match(Lexeme.DEF)
+            if self.check(Lexeme.OPAREN):
+                return self.parse_metaExpr(self.parse_anonFunc())
+            else:
+                return self.parse_metaExpr(self.parse_funcDef())
         elif self.ifExpr_pending():
             ifExpr = self.parse_ifExpr()
             return self.parse_metaExpr(ifExpr)
@@ -135,12 +141,6 @@ class Parser:
         elif self.varDecl_pending():
             varDecl = self.parse_varDecl()
             return self.parse_metaExpr(varDecl)
-        elif self.anonFunc_pending():
-            anonFunc = self.parse_anonFunc()
-            return self.parse_metaExpr(anonFunc)
-        elif self.funcDef_pending():
-            funcDef = self.parse_funcDef()
-            return self.parse_metaExpr(funcDef)
         elif self.arrayLiteral_pending():
             arrayLiteral = self.parse_arrayLiteral()
             return self.parse_metaExpr(arrayLiteral)
@@ -251,7 +251,6 @@ class Parser:
         return self.check(Lexeme.LAMBDA)
 
     def parse_anonFunc(self):
-        self.match(Lexeme.LAMBDA)
         self.match(Lexeme.OPAREN)
         param_list = self.parse_optParamList()
         self.match(Lexeme.CPAREN)
@@ -294,7 +293,6 @@ class Parser:
         return self.check(Lexeme.DEF)
 
     def parse_funcDef(self):
-        self.match(Lexeme.DEF)
         func_name = self.match(Lexeme.IDENTIFIER)
         self.match(Lexeme.OPAREN)
         param_list = self.parse_optParamList()

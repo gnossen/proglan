@@ -1,6 +1,6 @@
-let Dog = lambda(name) {
+let Dog = def(name) {
     this.name = name 
-    this.bark = lambda() {
+    this.bark = def() {
         println("Bark!")
     }
     this

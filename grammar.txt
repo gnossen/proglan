@@ -102,5 +102,5 @@ operator : PLUS
          | GEQ
          | NEQ
 
-anonymousFunction : LAMBDA OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
-                  | LAMBDA OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE
+anonFunc : DEF OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
+         | DEF OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE
