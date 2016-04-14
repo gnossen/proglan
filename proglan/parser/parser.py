@@ -358,7 +358,9 @@ class Parser:
                 self.check(Lexeme.BITWISE_XOR) or \
                 self.check(Lexeme.LEQ) or \
                 self.check(Lexeme.GEQ) or \
-                self.check(Lexeme.NEQ)
+                self.check(Lexeme.NEQ) or \
+                self.check(Lexeme.TRIPLE_EQ) or \
+                self.check(Lexeme.NOT_TRIPLE_EQ)
 
     def parse_operator(self):
         if self.check(Lexeme.PLUS):
@@ -391,8 +393,12 @@ class Parser:
             return self.match(Lexeme.LEQ)
         elif self.check(Lexeme.GEQ):
             return self.match(Lexeme.GEQ)
-        else:
+        elif self.check(Lexeme.NEQ):
             return self.match(Lexeme.NEQ)
+        elif self.check(Lexeme.TRIPLE_EQ):
+            return self.match(Lexeme.TRIPLE_EQ)
+        else:
+            return self.match(Lexeme.NOT_TRIPLE_EQ)
 
     def parse_varAssign(self, identifier):
         self.match(Lexeme.EQUAL)

@@ -383,6 +383,10 @@ class Environment:
             return self.evalGeq(left, op, right, env)
         elif op.type == Lexeme.NEQ:
             return self.evalNeq(left, op, right, env)
+        elif op.type == Lexeme.TRIPLE_EQ:
+            return self.evalTripleEq(left, op, right, env)
+        elif op.type == Lexeme.NOT_TRIPLE_EQ:
+            return self.evalNotTripleEq(left, op, right, env)
 
         raise Exception("Unrecognized binary operator %s" % op)
 
@@ -555,6 +559,22 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
         else:
             return Lexeme(Lexeme.BOOL, value=True)
+
+    def evalTripleEq(self, left, op, right, env):
+        equal = self.eval(left, env) is self.eval(right, env)
+        if equal:
+            return Lexeme(Lexeme.BOOL, value=True)
+        else:
+            return Lexeme(Lexeme.BOOL, value=False)
+
+    def evalNotTripleEq(self, left, op, right, env):
+        equal = self.evalTripleEq(left, op, right, env)
+
+        if equal.value == True:
+            return Lexeme(Lexeme.BOOL, value=False)
+        else:
+            return Lexeme(Lexeme.BOOL, value=True)
+       
 
     def evalIfExpr(self, pt, env):
         cond = self.coerceBool(self.eval(pt.left, env))

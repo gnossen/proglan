@@ -76,7 +76,11 @@ class Lexer:
                 return Lexeme(Lexeme.LESS_THAN, line=self.line, col=self.col - 1)
         elif ch == "!" and self.peek() == "=":
             self.advance()
-            return Lexeme(Lexeme.NEQ, line=self.line, col=self.col - 2)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.NOT_TRIPLE_EQ, line=self.line, col=self.col - 3)
+            else:
+                return Lexeme(Lexeme.NEQ, line=self.line, col=self.col - 2)
         elif ch == ";":
             return Lexeme(Lexeme.SEMICOLON, line=self.line, col=self.col - 1)
         elif ch == ":":
@@ -162,7 +166,11 @@ class Lexer:
     def lex_equal(self):
         if self.peek() == "=":
             self.advance()
-            return Lexeme(Lexeme.DOUBLE_EQUAL, line=self.line, col=self.col - 2)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.TRIPLE_EQ, line=self.line, col=self.col - 3)
+            else:
+                return Lexeme(Lexeme.DOUBLE_EQUAL, line=self.line, col=self.col - 2)
         else:
             return Lexeme(Lexeme.EQUAL, line=self.line, col=self.col - 1)
 

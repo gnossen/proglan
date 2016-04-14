@@ -101,6 +101,8 @@ operator : PLUS
          | LEQ
          | GEQ
          | NEQ
+         | TRIPLE_EQUAL
+         | NOT_TRIPLE_EQUAL
 
 anonFunc : DEF OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
          | DEF OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE
