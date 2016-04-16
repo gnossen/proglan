@@ -79,6 +79,8 @@ class Lexeme:
     cons =          72
     attribAccess =  73
     notExpr =       74
+    breakExpr =     75
+    continueExpr =  76
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 

@@ -4,6 +4,8 @@ from ..parser.parser import *
 import time
 import sys
 
+sys.setrecursionlimit(1500)
+
 class Environment:
     def __init__(self, input=None, file=None):
         self.env = self.create_env()
@@ -37,6 +39,12 @@ class Environment:
         env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL))
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="import"),
                     Lexeme(Lexeme.builtIn, left=self.import_func),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="break"),
+                    Lexeme(Lexeme.builtIn, left=self.break_func),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="continue"),
+                    Lexeme(Lexeme.builtIn, left=self.continue_func),
                     env)
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
                     Lexeme(Lexeme.builtIn, left=self.printFunc),
@@ -152,6 +160,12 @@ class Environment:
 
         ast = Parser(file=path).parse()
         return self.eval(ast, self.env)
+
+    def break_func(self, arg_tree, env):
+        return self.make_breakExpr()
+
+    def continue_func(self, arg_tree, env):
+        return self.make_continueExpr()
 
     def printlnFunc(self, arg_tree, env):
         res = self.printFunc(arg_tree, env)
@@ -299,6 +313,10 @@ class Environment:
             return self.evalAttribAccess(pt, env)
         elif pt.type == Lexeme.returnExpr:
             return make_returnExpr(self.eval(pt.left, env))
+        elif pt.type == Lexeme.breakExpr:
+            return pt
+        elif pt.type == Lexeme.continueExpr:
+            return pt
         elif pt.type == Lexeme.notExpr:
             return self.evalNotExpr(pt, env)
         elif pt.type == Lexeme.NULL:
@@ -313,7 +331,8 @@ class Environment:
             return self.eval(pt.left, env)
         else:
             cur = self.eval(pt.left, env)
-            if cur.type == Lexeme.returnExpr:
+            stoppers = [Lexeme.returnExpr, Lexeme.breakExpr, Lexeme.continueExpr]
+            if cur.type in stoppers:
                 return cur
 
             return self.eval(pt.right, env)
@@ -336,6 +355,9 @@ class Environment:
         elif lval.type == Lexeme.attribAccess:
             obj = self.eval(lval.left, env)
             attr = lval.right
+
+            if obj.type == Lexeme.NULL:
+                raise Exception("Attempted to access attribute from NULL object. %s" % str(lval.left))
 
             if not self.varDefined(attr, obj):
                 self.insert(attr, new_val, obj)
@@ -636,6 +658,10 @@ class Environment:
             res = self.eval(body, new_env)
             if res.type == Lexeme.returnExpr:
                 return res
+            elif res.type == Lexeme.breakExpr:
+                return Lexeme(Lexeme.NULL)
+            elif res.type == Lexeme.continueExpr:
+                continue
 
         return res
 
@@ -728,10 +754,19 @@ class Environment:
     def evalAttribAccess(self, pt, env):
         obj = self.eval(pt.left, env)
         attr = pt.right
+
+        if obj.type == Lexeme.NULL:
+            raise Exception("Attempted to access attribute of NULL object. %s" % str(pt.left))
+
         return self.lookup(attr, obj)
 
     def make_function(self, param_list, func_param, body, env):
         join2 = Lexeme(Lexeme.gen_purp, left=body, right=env)
         join = Lexeme(Lexeme.gen_purp, left=func_param, right=join2)
         return Lexeme(Lexeme.function, left=param_list, right=join)
-    
+   
+    def make_breakExpr(self):
+        return Lexeme(Lexeme.breakExpr)
+
+    def make_continueExpr(self):
+        return Lexeme(Lexeme.continueExpr)
