@@ -31,3 +31,10 @@ def test_example14(capsys):
     out, err = capsys.readouterr()
     assert err == ""
     assert out == "Rover\nBark!\nSpot\n"
+
+def test_example15(capsys):
+    env = Environment(file="../../examples/example15.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "3\n0\n"

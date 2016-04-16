@@ -1,0 +1,9 @@
+def f(node) {
+    if (node === null) {
+        return 3
+    }
+    0
+}
+
+println(f(null))
+println(f(2))

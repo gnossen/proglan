@@ -439,10 +439,13 @@ class Environment:
         return Lexeme(Lexeme.BOOL, value=True)
 
     def evalGreaterThan(self, left, op, right, env):
-        if left.type != Lexeme.NUMBER:
-            raise Exception("%s not comparable" % str(left))
-
-        if right.type != Lexeme.NUMBER:
+        if left.type == Lexeme.NUMBER:
+            if right.type != Lexeme.NUMBER:
+                raise Exception("%s not comparable with %s" % (str(left), str(right)))
+        elif left.type == Lexeme.STRING:
+            if right.type != Lexeme.STRING:
+                raise Exception("%s not comparable with %s" % (str(left), str(right)))
+        else:
             raise Exception("%s not comparable" % str(right))
 
         if left.value > right.value:
@@ -451,12 +454,15 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
 
     def evalLessThan(self, left, op, right, env):
-        if left.type != Lexeme.NUMBER:
-            raise Exception("%s not comparable" % str(left))
-
-        if right.type != Lexeme.NUMBER:
+        if left.type == Lexeme.NUMBER:
+            if right.type != Lexeme.NUMBER:
+                raise Exception("%s not comparable with %s" % (str(left), str(right)))
+        elif left.type == Lexeme.STRING:
+            if right.type != Lexeme.STRING:
+                raise Exception("%s not comparable with %s" % (str(left), str(right)))
+        else:
             raise Exception("%s not comparable" % str(right))
-
+       
         if left.value < right.value:
             return Lexeme(Lexeme.BOOL, value=True)
         else:
@@ -561,6 +567,9 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=True)
 
     def evalTripleEq(self, left, op, right, env):
+        if left.type == Lexeme.NULL and right.type == Lexeme.NULL:
+            return Lexeme(Lexeme.BOOL, value=True)
+
         equal = self.eval(left, env) is self.eval(right, env)
         if equal:
             return Lexeme(Lexeme.BOOL, value=True)

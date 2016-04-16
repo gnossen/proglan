@@ -52,7 +52,8 @@ class Parser:
             skip_newlines = False
 
         if not self.check(lexeme_type):
-            raise Exception("Syntax Error: Invalid token '%s'." % str(self.current()))
+            typed_lexeme = Lexeme(lexeme_type)
+            raise Exception("Syntax Error: Invalid token '%s'. Expected '%s'." % (str(self.current()), typed_lexeme.get_type()))
         else:
             return self.advance(skip=skip_newlines)
 
@@ -120,7 +121,8 @@ class Parser:
                 self.anonFunc_pending() or \
                 self.funcDef_pending() or \
                 self.arrayLiteral_pending() or \
-                self.check(Lexeme.OPAREN)
+                self.check(Lexeme.OPAREN) or \
+                self.check(Lexeme.RETURN)
 
     def parse_expr(self):
         if self.primary_pending():
