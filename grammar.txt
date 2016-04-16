@@ -8,6 +8,8 @@ expr: primitive
     | funcDef
     | arrayLiteral
     | OPAREN expr CPAREN                                        // parenthesized expression
+    | RETURN expr
+    | NOT expr
     | expr OPAREN optArgList CPAREN                             // function call
     | expr OPAREN optArgList CPAREN OBRACE optExprList CBRACE   // higher order function call
     | expr OSQBRACE expr CSQBRACE                               // array access
@@ -24,6 +26,7 @@ expr: primary metaExpr
     | arrayLiteral metaExpr
     | OPAREN expr CPAREN metaExpr
     | RETURN expr
+    | NOT expr
 
 metaExpr: DOT IDENTIFIER metaExpr
         | OPAREN optArgList CPAREN metaExpr

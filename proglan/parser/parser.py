@@ -122,7 +122,8 @@ class Parser:
                 self.funcDef_pending() or \
                 self.arrayLiteral_pending() or \
                 self.check(Lexeme.OPAREN) or \
-                self.check(Lexeme.RETURN)
+                self.check(Lexeme.RETURN) or \
+                self.check(Lexeme.NOT)
 
     def parse_expr(self):
         if self.primary_pending():
@@ -150,6 +151,10 @@ class Parser:
             self.match(Lexeme.RETURN)
             expr = self.parse_expr()
             return make_returnExpr(expr)
+        elif self.check(Lexeme.NOT):
+            self.match(Lexeme.NOT)
+            expr = self.parse_expr()
+            return make_notExpr(expr)
         else:
             self.match(Lexeme.OPAREN)
             expr = self.parse_expr()
@@ -486,3 +491,6 @@ def make_funcParam(name, params):
 
 def make_attribAccess(obj, attr):
     return Lexeme(Lexeme.attribAccess, left=obj, right=attr)
+
+def make_notExpr(expr):
+    return Lexeme(Lexeme.notExpr, left=expr)

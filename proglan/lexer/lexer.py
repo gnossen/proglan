@@ -119,6 +119,8 @@ class Lexer:
                 return Lexeme(Lexeme.AND, line=self.line, col=self.col - 3)
             elif word == "or":
                 return Lexeme(Lexeme.OR, line=self.line, col=self.col - 2)
+            elif word == "not":
+                return Lexeme(Lexeme.NOT, line=self.line, col=self.col - 3)
             elif word == "xor":
                 return Lexeme(Lexeme.XOR, line=self.line, col=self.col - 3)
             elif word == "true":

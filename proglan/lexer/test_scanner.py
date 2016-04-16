@@ -193,6 +193,10 @@ def test_example6():
     save_lex_stream("../../examples/example6-lexed.txt", actual)
     assert match_lexemes(actual, expected)
 
+def test_example16():
+    actual = Scanner(file="../../examples/example16.prog").scan()
+    save_lex_stream("../../examples/example16-lexed.txt", actual)
+
 def save_lex_stream(filename, lexemes):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     realpath = os.path.join(cur_dir, filename)

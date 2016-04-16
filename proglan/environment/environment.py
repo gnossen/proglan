@@ -299,6 +299,8 @@ class Environment:
             return self.evalAttribAccess(pt, env)
         elif pt.type == Lexeme.returnExpr:
             return make_returnExpr(self.eval(pt.left, env))
+        elif pt.type == Lexeme.notExpr:
+            return self.evalNotExpr(pt, env)
         elif pt.type == Lexeme.NULL:
             return pt
         elif pt.type == Lexeme.builtIn:
@@ -489,10 +491,16 @@ class Environment:
         
         return Lexeme(Lexeme.BOOL, value=True)
 
+    def evalNotExpr(self, pt, env):
+        eval_expr = self.coerceBool(self.eval(pt.left, env))
+        if eval_expr.value == True:
+            return Lexeme(Lexeme.BOOL, value=False)
+        else:
+            return Lexeme(Lexeme.BOOL, value=True)
 
     def evalAnd(self, left, op, right, env):
-        left = self.coerceBool(left)
-        right = self.coerceBool(right)
+        left = self.coerceBool(self.eval(left, env))
+        right = self.coerceBool(self.eval(right, env))
 
         if left.value == True and right.value == True:
             return Lexeme(Lexeme.BOOL, value=True)
@@ -500,8 +508,8 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
 
     def evalOr(self, left, op, right, env):
-        left = self.coerceBool(left)
-        right = self.coerceBool(right)
+        left = self.coerceBool(self.eval(left, env))
+        right = self.coerceBool(self.eval(right, env))
 
         if left.value == True or right.value == True:
             return Lexeme(Lexeme.BOOL, value=True)
@@ -509,8 +517,8 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
 
     def evalXor(self, left, op, right, env):
-        left = self.coerceBool(left)
-        right = self.coerceBool(right)
+        left = self.coerceBool(self.eval(left, env))
+        right = self.coerceBool(self.eval(right, env))
 
         if left.value != right.value:
             return Lexeme(Lexeme.BOOL, value=True)
@@ -518,31 +526,40 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=False)
 
     def evalBitwiseAnd(self, left, op, right, env):
-        if left.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(left))
+        l = self.eval(left, env)
+        r = self.eval(right, env)
 
-        if right.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(right))
+        if l.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(l))
 
-        return Lexeme(Lexeme.NUMBER, value=(left.value & right.value))
+        if r.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(r))
+
+        return Lexeme(Lexeme.NUMBER, value=(l.value & r.value))
 
     def evalBitwiseOr(self, left, op, right, env):
-        if left.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(left))
+        l = self.eval(left, env)
+        r = self.eval(right, env)
 
-        if right.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(right))
+        if l.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(l))
 
-        return Lexeme(Lexeme.NUMBER, value=(left.value | right.value))
+        if r.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(r))
+
+        return Lexeme(Lexeme.NUMBER, value=(l.value | r.value))
 
     def evalBitwiseXor(self, left, op, right, env):
-        if left.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(left))
+        l = self.eval(left, env)
+        r = self.eval(right, env)
 
-        if right.type != Lexeme.NUMBER:
-            raise Exception("Cannot perform bit operations on %s" % str(right))
+        if l.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(l))
 
-        return Lexeme(Lexeme.NUMBER, value=(left.value ^ right.value))
+        if r.type != Lexeme.NUMBER:
+            raise Exception("Cannot perform bit operations on %s" % str(r))
+
+        return Lexeme(Lexeme.NUMBER, value=(l.value ^ r.value))
 
     def evalLeq(self, left, op, right, env):
         less_than = self.evalLessThan(left, op, right, env)
@@ -567,10 +584,13 @@ class Environment:
             return Lexeme(Lexeme.BOOL, value=True)
 
     def evalTripleEq(self, left, op, right, env):
-        if left.type == Lexeme.NULL and right.type == Lexeme.NULL:
+        l = self.eval(left, env)
+        r = self.eval(right, env)
+
+        if l.type == Lexeme.NULL and r.type == Lexeme.NULL:
             return Lexeme(Lexeme.BOOL, value=True)
 
-        equal = self.eval(left, env) is self.eval(right, env)
+        equal = l is r
         if equal:
             return Lexeme(Lexeme.BOOL, value=True)
         else:
