@@ -1,0 +1,132 @@
+def Dict() {
+    let RED = 0
+    let BLACK = 1
+    def Node(key, value) {
+        let color = RED
+        let left = null
+        let right = null
+        let parent = null
+        let self = this
+        def grandparent() { if ( parent !== null ) { parent.parent } else { null } }
+        def is_left_child() { if (parent !== null) { self === parent.left } else { false } }
+        def is_right_child() { if (parent !== null) { self === parent.right } else { false } }
+        def add_left(child) {
+            left = child
+            child.parent = self
+        }
+        def add_right(child) {
+            right = child
+            child.parent = self
+        }
+        def uncle() {
+            if (is_left_child()) { parent.right }
+            else { parent.left }
+        }
+        def is_linear() {
+            (is_left_child() and parent.is_left_child()) or \
+                (is_right_child() and parent.is_right_child())
+        }
+        def rotate() {
+            gp = parent.parent
+            par = parent 
+            if (parent.is_left_child()) {
+                gp.add_left(self)
+            } else {
+                gp.add_right(self)
+            }
+
+            if (is_left_child()) {
+                par.add_left(self.right)
+                self.add_right(par)
+            } else {
+                par.add_right(self.left)
+                self.add_left(par)
+            }
+        }
+        this
+    }
+
+    def color(node) {
+        if (node === null) { BLACK } else { node.color }
+    }
+
+    def set_color(node, color) {
+        if (node !== null) { node.color = color }
+    }
+
+    let root = null
+
+    def add(key, value) {
+        let node = Node(key, value) 
+        if (root === null) {
+            root = node
+            return null
+        }
+
+        def _add(_subroot) {
+            if (node.key < _subroot.key) {
+                if (_subroot.left === null) {
+                    _subroot.add_left(node)
+                } else {
+                    _add(_subroot.left) 
+                }
+            } else {
+                if (_subroot.right === null) {
+                    _subroot.add_right(node)
+                } else {
+                    _add(_subroot.right) 
+                }
+            }
+        }
+
+        _add(root)
+
+        # def fixup(cur) {
+        #     if (cur === null) { break }
+        #     if (cur === root) { break }
+        #     if (color(cur.parent) == BLACK) { break }
+        #     if (color(cur.uncle()) == RED) {
+        #         set_color(cur.parent, BLACK)
+        #         set_color(cur.uncle(), BLACK)
+        #         set_color(cur.grandparent(), RED)
+        #         fixup(cur.grandparent())
+        #     } else {
+        #         if (not cur.linear()) {
+        #             cur.rotate()
+        #         }
+        #     }
+        # }
+
+        # fixup(node)
+    }
+
+    def get(key) {
+        def _get(subtree) {
+            if (subtree === null) {
+                null
+            } else if (subtree.key == key) {
+                subtree.value  
+            } else if (subtree.key > key) {
+                _get(subtree.left) 
+            } else {
+                _get(subtree.right)
+            }
+        }
+        _get(root)
+    }
+    
+    this
+}
+
+let dict = Dict()
+dict.add("one", 1)
+dict.add("two", 2)
+dict.add("three", 3)
+dict.add("four", 4)
+dict.add("five", 5)
+dict.add("six", 6)
+dict.add("seven", 7)
+dict.add("eight", 8)
+dict.add("nine", 9)
+println("Two is: ", dict.get("two"))
+println("Four is: ", dict.get("four"))
