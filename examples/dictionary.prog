@@ -12,30 +12,40 @@ def Dict() {
         def is_right_child() { if (parent !== null) { self === parent.right } else { false } }
         def add_left(child) {
             left = child
-            child.parent = self
+            if (child !== null) { child.parent = self }
         }
         def add_right(child) {
             right = child
-            child.parent = self
+            if (child !== null) { child.parent = self }
         }
         def uncle() {
             if (is_left_child()) { parent.right }
             else { parent.left }
         }
         def is_linear() {
+            if (parent === null) { return false }
             (is_left_child() and parent.is_left_child()) or \
                 (is_right_child() and parent.is_right_child())
         }
+
         def rotate() {
-            gp = parent.parent
-            par = parent 
-            if (parent.is_left_child()) {
-                gp.add_left(self)
+            let gp = parent.parent
+            let par = parent 
+
+            let was_left = is_left_child()
+            if (par === root) {
+                root = self
             } else {
-                gp.add_right(self)
+                if (parent.is_left_child()) {
+                    gp.add_left(self)
+                } else {
+                    gp.add_right(self)
+                }
             }
 
-            if (is_left_child()) {
+            par.parent = self
+
+            if (was_left) {
                 par.add_left(self.right)
                 self.add_right(par)
             } else {
@@ -54,50 +64,68 @@ def Dict() {
         if (node !== null) { node.color = color }
     }
 
+    def consify() {
+        def _consify(subroot) {
+            if (subroot === null) { null }
+            else { cons(subroot.key,
+                    cons(_consify(subroot.left),
+                        cons(_consify(subroot.right), null)))
+            }
+        }
+        _consify(root)
+    }
+
     let root = null
 
     def add(key, value) {
         let node = Node(key, value) 
         if (root === null) {
             root = node
-            return null
+        } else {
+            def _add(_subroot) {
+                if (node.key < _subroot.key) {
+                    if (_subroot.left === null) {
+                        _subroot.add_left(node)
+                    } else {
+                        _add(_subroot.left) 
+                    }
+                } else {
+                    if (_subroot.right === null) {
+                        _subroot.add_right(node)
+                    } else {
+                        _add(_subroot.right) 
+                    }
+                }
+            }
+
+            _add(root)
         }
 
-        def _add(_subroot) {
-            if (node.key < _subroot.key) {
-                if (_subroot.left === null) {
-                    _subroot.add_left(node)
+        def fixup(cur) {
+            while (true) {
+                if (cur === root) { break() }
+                if (color(cur.parent) == BLACK) { break() }
+                if (color(cur.uncle()) == RED) {
+                    set_color(cur.parent, BLACK)
+                    set_color(cur.uncle(), BLACK)
+                    set_color(cur.grandparent(), RED)
+                    cur = cur.grandparent()
                 } else {
-                    _add(_subroot.left) 
-                }
-            } else {
-                if (_subroot.right === null) {
-                    _subroot.add_right(node)
-                } else {
-                    _add(_subroot.right) 
+                    if (not cur.is_linear()) {
+                        let old_parent = cur.parent
+                        cur.rotate()
+                        cur = old_parent
+                    }
+
+                    set_color(cur.parent, BLACK)
+                    set_color(cur.grandparent(), RED)
+                    cur.parent.rotate()
                 }
             }
         }
 
-        _add(root)
-
-        # def fixup(cur) {
-        #     if (cur === null) { break }
-        #     if (cur === root) { break }
-        #     if (color(cur.parent) == BLACK) { break }
-        #     if (color(cur.uncle()) == RED) {
-        #         set_color(cur.parent, BLACK)
-        #         set_color(cur.uncle(), BLACK)
-        #         set_color(cur.grandparent(), RED)
-        #         fixup(cur.grandparent())
-        #     } else {
-        #         if (not cur.linear()) {
-        #             cur.rotate()
-        #         }
-        #     }
-        # }
-
-        # fixup(node)
+        fixup(node)
+        set_color(root, BLACK)
     }
 
     def get(key) {
@@ -130,3 +158,5 @@ dict.add("eight", 8)
 dict.add("nine", 9)
 println("Two is: ", dict.get("two"))
 println("Four is: ", dict.get("four"))
+println("Seven is: ", dict.get("seven"))
+println(dict.consify())
