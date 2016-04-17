@@ -1,0 +1,5 @@
+def a(x)(f) {
+    x * f()
+}
+
+println(a(3) { 4 } )

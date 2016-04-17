@@ -7,5 +7,5 @@ setup(name='proglan',
       author_email='rjbelleville@crimson.ua.edu',
       setup=['bin/proglan'],
       # packages=find_packages(exclude=["test_*"])
-      packages=['proglan.lexer', 'proglan.parser', 'proglan.environment']
+      packages=['proglan.lexer', 'proglan.parser', 'proglan.environment', 'proglan.printer']
       )

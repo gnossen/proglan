@@ -50,9 +50,7 @@ class Lexeme:
     NEW =           44
 
     funcDef =       45
-    optParamlist =  46
     paramList =     47
-    optExprList =   48
     exprList =      49
     expr =          50
     varDecl =       51
@@ -60,14 +58,9 @@ class Lexeme:
     ifExpr =        53
     elseExpr =      54
     whileExpr =     55
-    primary =       56
-    operator =      57
     funcCall =      58
-    optAnonArg =    59
-    optArglist =    60
     argList =       61
     anonFunc =      62
-    identExpr =     63
     primExpr =      64
     arrayAccess =   65
     arrayLiteral =  66

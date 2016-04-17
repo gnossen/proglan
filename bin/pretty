@@ -1,0 +1,20 @@
+#!/usr/local/bin/python
+
+from proglan.parser.parser import *
+from proglan.printer.printer import *
+import sys
+import pdb
+
+if len(sys.argv) < 2:
+    raise Exception("Need file to pretty print.")
+else:
+    filepath = os.path.abspath(sys.argv[1])
+
+    try:
+        parser = Parser(file=filepath)
+        print(pretty_print(parser.parse()))
+    except Exception as e:
+        # traceback.print_exc()
+        print("Exception: " + str(e))
+        type, value, tb = sys.exc_info()
+        pdb.post_mortem(tb)

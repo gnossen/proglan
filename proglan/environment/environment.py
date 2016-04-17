@@ -1,6 +1,7 @@
 import os
 from ..lexer.lexeme import *
 from ..parser.parser import *
+from ..printer.printer import *
 import time
 import sys
 
@@ -48,6 +49,9 @@ class Environment:
                     env)
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="print"),
                     Lexeme(Lexeme.builtIn, left=self.printFunc),
+                    env)
+        self.insert(Lexeme(Lexeme.IDENTIFIER, value="pretty"),
+                    Lexeme(Lexeme.builtIn, left=self.pretty_func),
                     env)
         self.insert(Lexeme(Lexeme.IDENTIFIER, value="println"),
                     Lexeme(Lexeme.builtIn, left=self.printlnFunc),
@@ -181,6 +185,9 @@ class Environment:
 
         sys.stdout.write(self.pretty_print(car, env))
         return self.printFunc(cdr, env)
+
+    def pretty_func(self, arg_tree, env):
+        return Lexeme(Lexeme.STRING, value=pretty_print(self.eval(arg_tree.left, env)))
 
     def array_append(self, args, env):
         self.check_num_args("append", args, 2)
