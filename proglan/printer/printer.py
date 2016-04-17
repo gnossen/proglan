@@ -78,7 +78,7 @@ def print_number(pt):
 
 @tab
 def print_string(pt):
-    return pt.value
+    return "\"%s\"" % pt.value
 
 @tab
 def print_boolean(pt):
@@ -191,7 +191,7 @@ def print_exprList(pt):
 def print_funcCall(pt):
     func_name = pt.left
     arg_list = pt.right.left
-    func_arg = pt.left.right
+    func_arg = pt.right.right
 
     main_part = "%s(%s)" % (_pretty_print(func_name, 0), print_comma_list(arg_list, 0))
     if func_arg is None:
@@ -233,9 +233,9 @@ def print_elseExpr(pt):
     ifExpr = pt.right
 
     if body is None:
-        return "else%s" % print_ifExpr(ifExpr, 0)
+        return "else %s" % print_ifExpr(ifExpr, 0)
     else:
-        return "else%s" % get_body(body)
+        return "else %s" % get_body(body)
 
 @tab
 def print_whileExpr(pt):

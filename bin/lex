@@ -1,0 +1,33 @@
+#!/usr/local/bin/python
+
+from proglan.lexer.scanner import *
+import sys
+import os
+import pdb
+import traceback
+
+def abs_path(filename):
+    if not os.path.isabs(filename):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        return os.path.join(cur_dir, filename)
+    else:
+        return filename
+
+def print_lex_stream(lexemes):
+    for lex in lexemes:
+        print(str(lex))
+
+if len(sys.argv) < 2:
+    raise Exception("Must supply filename.")
+else:
+    filepath = os.path.abspath(sys.argv[1])
+
+    try:
+        print_lex_stream(Scanner(file=abs_path(filepath)).scan())
+    except Exception as e:
+        # traceback.print_exc()
+        print("Exception: " + str(e))
+        type, value, tb = sys.exc_info()
+        pdb.post_mortem(tb)
+
+

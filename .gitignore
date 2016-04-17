@@ -8,3 +8,4 @@ examples/*.txt
 build/
 dist/
 proglan.egg-info/
+.cache/

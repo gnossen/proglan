@@ -1,0 +1,2 @@
+(is_left_child() and parent.is_left_child()) or \
+    (is_right_child() and parent.is_right_child())

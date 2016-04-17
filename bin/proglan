@@ -1,7 +1,8 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
 from proglan.environment.environment import *
 import sys
+import pdb
 import traceback
 
 if len(sys.argv) < 2:
@@ -22,5 +23,7 @@ else:
         env = Environment(file=filepath)
         env.evaluate()
     except Exception as e:
-        traceback.print_exc()
+        # traceback.print_exc()
         print("Exception: " + str(e))
+        type, value, tb = sys.exc_info()
+        pdb.post_mortem(tb)

@@ -1,0 +1,62 @@
+#!/usr/local/bin/python
+
+from proglan.parser.parser import *
+import sys
+import os
+import pdb
+import traceback
+import uuid
+import pydot
+
+def abs_path(filename):
+    if not os.path.isabs(filename):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        return os.path.join(cur_dir, filename)
+    else:
+        return filename
+
+def draw_tree(root_lexeme, filename):
+    def _draw_tree(lex):
+        node = pydot.Node(str(uuid.uuid1()), label='"%s"' % str(lex))
+        graph.add_node(node)
+
+        if not(lex.left is None and lex.right is None):
+            if lex.left is not None:
+                left = _draw_tree(lex.left)
+            else:
+                left = pydot.Node(str(uuid.uuid1()), label='NULL')
+                graph.add_node(left)
+            
+            graph.add_edge(pydot.Edge(node, left))
+
+            if lex.right is not None:
+                right = _draw_tree(lex.right)
+            else:
+                right = pydot.Node(str(uuid.uuid1()), label='NULL')
+                graph.add_node(right)
+
+            graph.add_edge(pydot.Edge(node, right))
+
+        return node
+
+    graph = pydot.Dot(graph_type='digraph')
+    _draw_tree(root_lexeme)
+    graph.write_png(filename)
+
+if len(sys.argv) != 3:
+    raise Exception("Usage: parse progfile astfile")
+else:
+    progfile = abs_path(os.path.abspath(sys.argv[1]))
+    astfile = abs_path(os.path.abspath(sys.argv[2]))
+
+    try:
+        ast = Parser(file=progfile).parse()
+        draw_tree(ast, astfile)
+        print "Wrote %s." % astfile
+    except Exception as e:
+        # traceback.print_exc()
+        print("Exception: " + str(e))
+        type, value, tb = sys.exc_info()
+        pdb.post_mortem(tb)
+
+
