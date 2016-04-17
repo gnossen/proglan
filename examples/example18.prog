@@ -1,0 +1,12 @@
+def Cat(name) {
+    this.name = name
+    this.meow = def() {
+        println("Meow!")
+    }
+}
+
+let garfield = new Cat("Garfield")
+garfield.meow()
+println(garfield.name)
+garfield.name = "Seymour"
+println(garfield.name)

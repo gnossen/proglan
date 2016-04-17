@@ -45,3 +45,11 @@ def test_example17(capsys):
     out, err = capsys.readouterr()
     assert err == ""
     assert out == "0\n1\n2\n3\n4\n2\n3\n"
+
+
+def test_example18(capsys):
+    env = Environment(file="../../examples/example18.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "Meow!\nGarfield\nSeymour\n"

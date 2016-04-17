@@ -1,0 +1,8 @@
+let F = def() {
+    this.x = 3
+    this.y = def(a) { a }
+}
+
+let x = 10
+let f = new F()
+println(f.y(x))

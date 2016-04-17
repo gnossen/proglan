@@ -319,6 +319,8 @@ class Environment:
             return pt
         elif pt.type == Lexeme.notExpr:
             return self.evalNotExpr(pt, env)
+        elif pt.type == Lexeme.newExpr:
+            return self.evalNewExpr(pt, env)
         elif pt.type == Lexeme.NULL:
             return pt
         elif pt.type == Lexeme.builtIn:
@@ -675,22 +677,24 @@ class Environment:
         self.insert(name, func, env)
         return func
 
-    def evalFuncCall(self, pt, env):
+    def unpack_funcCall(self, pt, env):
         func = self.eval(pt.left, env)
-        
-        if func.type == Lexeme.builtIn:
-            return func.left(pt.right.left, env)
-
-        if func.type != Lexeme.function:
-            raise Exception("Attempted to call non-function %s." % str(func))
-
-        param_list = func.left
         arg_list = pt.right.left
+        func_arg = pt.right.right
+        return func, arg_list, func_arg
+
+    def unpack_funcDef(self, func, env):
+        param_list = func.left
+        func_param = func.right.left
+        body = func.right.right.left
         defining_env = func.right.right.right
+        return param_list, func_param, body, defining_env
+
+    def extend_funcEnv(self, func, defining_env, param_list, arg_list, func_param, func_arg, env):
         new_env = self.extend_env(Lexeme(Lexeme.NULL), Lexeme(Lexeme.NULL), defining_env)
         while param_list is not None:
             if arg_list is None:
-                raise Exception("Not enough arguments supplied to %s" % str(pt))
+                raise Exception("Not enough arguments supplied to %s." % str(func))
 
             param = param_list.left
             arg = self.eval(arg_list.left, env)
@@ -700,26 +704,49 @@ class Environment:
             arg_list = arg_list.right
 
         if arg_list is not None:
-            raise Exception("Too many arguments supplied to %s" % str(pt))
+            raise Exception("Too many arguments supplied to %s." % str(func))
 
-        func_param = func.right.left
-        func_arg = pt.right.right
         if func_param is not None:
             if func_arg is None:
-                raise Exception("No function parameter supplied to %s" % str(pt))
-            
+                raise Exception("No function parameter supplied to %s." % str(func))
+
             func_name = func_param.left
             func_param_params = func_param.right
             arg_func = self.make_function(func_param_params, None, func_arg, env)
             self.insert(func_name, arg_func, new_env)
 
-        body = func.right.right.left
+        return new_env
+
+    def evalFuncCall(self, pt, env):
+        func, arg_list, func_arg = self.unpack_funcCall(pt, env)
+        if func.type == Lexeme.builtIn:
+            return func.left(pt.right.left, env)
+
+        if func.type != Lexeme.function:
+            raise Exception("Attempted to call non-function %s." % str(func))
+
+        param_list, func_param, body, defining_env = self.unpack_funcDef(func, env)
+        new_env = self.extend_funcEnv(func, defining_env, param_list, arg_list, func_param, func_arg, env)
         res = self.eval(body, new_env)
 
         if res.type == Lexeme.returnExpr:
             return res.left
 
         return res
+
+    def evalNewExpr(self, pt, env):
+        func_call = pt.left
+        if func_call.type != Lexeme.funcCall:
+            raise Exception("Must use 'new' keyword with function call. %s" % str(pt))
+
+        func, arg_list, func_arg = self.unpack_funcCall(func_call, env)
+        if func.type != Lexeme.function:
+            raise Exception("Attempted to call non-function %s." % str(func))
+
+        param_list, func_param, body, defining_env = self.unpack_funcDef(func, env)
+        new_env = self.extend_funcEnv(func, defining_env, param_list, arg_list, func_param, func_arg, env)
+        res = self.eval(body, new_env)
+        return new_env
 
     def evalArrayLiteral(self, pt, env):
         arr = []

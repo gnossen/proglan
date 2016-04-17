@@ -129,6 +129,8 @@ class Lexer:
                 return Lexeme(Lexeme.BOOL, value=False, line=self.line, col=self.col - 5)
             elif word == "null":
                 return Lexeme(Lexeme.NULL, line=self.line, col=self.col - 4)
+            elif word == "new":
+                return Lexeme(Lexeme.NEW, line=self.line, col=self.col - 3)
             else: 
                 return Lexeme(Lexeme.IDENTIFIER, value=word, line=self.line, col=self.col - len(word))
         elif ch.isdigit():

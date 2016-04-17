@@ -155,6 +155,10 @@ class Parser:
             self.match(Lexeme.NOT)
             expr = self.parse_expr()
             return make_notExpr(expr)
+        elif self.check(Lexeme.NEW):
+            self.match(Lexeme.NEW)
+            expr = self.parse_expr()
+            return make_newExpr(expr)
         else:
             self.match(Lexeme.OPAREN)
             expr = self.parse_expr()
@@ -494,3 +498,6 @@ def make_attribAccess(obj, attr):
 
 def make_notExpr(expr):
     return Lexeme(Lexeme.notExpr, left=expr)
+
+def make_newExpr(expr):
+    return Lexeme(Lexeme.newExpr, left=expr)
