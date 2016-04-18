@@ -142,21 +142,4 @@ def Dict() {
         }
         _get(root)
     }
-    
-    this
 }
-
-let dict = Dict()
-dict.add("one", 1)
-dict.add("two", 2)
-dict.add("three", 3)
-dict.add("four", 4)
-dict.add("five", 5)
-dict.add("six", 6)
-dict.add("seven", 7)
-dict.add("eight", 8)
-dict.add("nine", 9)
-println("Two is: ", dict.get("two"))
-println("Four is: ", dict.get("four"))
-println("Seven is: ", dict.get("seven"))
-println(dict.consify())
