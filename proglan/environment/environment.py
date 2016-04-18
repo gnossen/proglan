@@ -163,7 +163,11 @@ class Environment:
         path = self.get_path(filename.value) 
 
         ast = Parser(file=path).parse()
-        return self.eval(ast, self.env)
+        old_file = self.file
+        self.file = path
+        res = self.eval(ast, self.env)
+        self.file = old_file
+        return res
 
     def break_func(self, arg_tree, env):
         return self.make_breakExpr()

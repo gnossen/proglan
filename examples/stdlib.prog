@@ -1,3 +1,5 @@
+import("dictionary.prog")
+
 def list_len(list) {
     if(list == null) { 0 } 
     else {
