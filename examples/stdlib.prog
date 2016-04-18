@@ -6,3 +6,52 @@ def list_len(list) {
         list_len(cdr(list)) + 1
     }
 }
+
+def map(func, list) {
+    if (list === null) {
+        null
+    } else {
+        cons(func(car(list)), map(func, cdr(list)))
+    }
+}
+
+def range(a, b) {
+    def _iter(i) {
+        if (i == b) {
+            null
+        } else {
+            cons(i, _iter(i + 1))
+        }
+    }
+
+    _iter(a)
+}
+
+def accumulate(comb, init, list) {
+    def _iter(sublist) {
+        if (sublist === null) {
+            init
+        } else {
+            comb(car(sublist), _iter(cdr(sublist)))    
+        }
+    }
+
+    _iter(list)
+}
+
+def add(a, b) { a + b }
+
+def sum(list) {
+    accumulate(add, 0, list)
+}
+
+def for(A)(body: elem) {
+    let sublist = A
+    let res = null
+    while (sublist !== null) {
+        res = body(car(sublist))
+        sublist = cdr(sublist)
+    }
+
+    res
+}
