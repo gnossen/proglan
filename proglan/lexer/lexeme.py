@@ -76,6 +76,7 @@ class Lexeme:
     breakExpr =     76
     continueExpr =  77
     newExpr =       78
+    minusExpr =     79
 
     def __init__(self, ltype, value=None, line=None, col=None, left=None, right=None): 
         self.type = ltype 

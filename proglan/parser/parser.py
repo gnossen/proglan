@@ -122,9 +122,7 @@ class Parser:
                 self.funcDef_pending() or \
                 self.arrayLiteral_pending() or \
                 self.check(Lexeme.OPAREN) or \
-                self.check(Lexeme.RETURN) or \
-                self.check(Lexeme.NOT) or \
-                self.check(Lexeme.NEW)
+                self.unaryOpExpr_pending()
 
     def parse_expr(self):
         if self.primary_pending():
@@ -148,18 +146,8 @@ class Parser:
         elif self.arrayLiteral_pending():
             arrayLiteral = self.parse_arrayLiteral()
             return self.parse_metaExpr(arrayLiteral)
-        elif self.check(Lexeme.RETURN):
-            self.match(Lexeme.RETURN)
-            expr = self.parse_expr()
-            return make_returnExpr(expr)
-        elif self.check(Lexeme.NOT):
-            self.match(Lexeme.NOT)
-            expr = self.parse_expr()
-            return make_notExpr(expr)
-        elif self.check(Lexeme.NEW):
-            self.match(Lexeme.NEW)
-            expr = self.parse_expr()
-            return make_newExpr(expr)
+        elif self.unaryOpExpr_pending():
+            return self.parse_unaryOpExpr()
         else:
             self.match(Lexeme.OPAREN)
             expr = self.parse_expr()
@@ -198,6 +186,30 @@ class Parser:
             return make_primExpr(expr, operator, right_expr)
         else:
             return expr
+
+    def unaryOpExpr_pending(self):
+        return self.check(Lexeme.RETURN) or \
+                self.check(Lexeme.NOT) or \
+                self.check(Lexeme.NEW) or \
+                self.check(Lexeme.MINUS)
+
+    def parse_unaryOpExpr(self):
+        if self.check(Lexeme.RETURN):
+            self.match(Lexeme.RETURN)
+            expr = self.parse_expr()
+            return make_returnExpr(expr)
+        elif self.check(Lexeme.NOT):
+            self.match(Lexeme.NOT)
+            expr = self.parse_expr()
+            return make_notExpr(expr)
+        elif self.check(Lexeme.NEW):
+            self.match(Lexeme.NEW)
+            expr = self.parse_expr()
+            return make_newExpr(expr)
+        else:
+            self.match(Lexeme.MINUS)
+            expr = self.parse_expr()
+            return make_minusExpr(expr)
 
     def varDecl_pending(self):
         return self.check(Lexeme.LET)
@@ -502,3 +514,6 @@ def make_notExpr(expr):
 
 def make_newExpr(expr):
     return Lexeme(Lexeme.newExpr, left=expr)
+
+def make_minusExpr(expr):
+    return Lexeme(Lexeme.minusExpr, left=expr)
