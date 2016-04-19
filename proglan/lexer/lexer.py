@@ -55,9 +55,17 @@ class Lexer:
         elif ch == ".":
             return Lexeme(Lexeme.DOT, line=self.line, col=self.col - 1)
         elif ch == "+":
-            return Lexeme(Lexeme.PLUS, line=self.line, col=self.col - 1)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.PLUS_EQUALS, line=self.line, col=self.col - 2)
+            else:
+                return Lexeme(Lexeme.PLUS, line=self.line, col=self.col - 1)
         elif ch == "-":
-            return Lexeme(Lexeme.MINUS, line=self.line, col=self.col - 1)
+            if self.peek() == "=":
+                self.advance()
+                return Lexeme(Lexeme.MINUS_EQUALS, line=self.line, col=self.col - 2)
+            else:
+                return Lexeme(Lexeme.MINUS, line=self.line, col=self.col - 1)
         elif ch == "*":
             return Lexeme(Lexeme.TIMES, line=self.line, col=self.col - 1)
         elif ch == "/":

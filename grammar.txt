@@ -1,38 +1,53 @@
-// no distinction between expressions and statements
-// before eliminating left recursion
-expr: primitive
-    | ifExpr
-    | whileExpr
-    | varDecl
-    | anonFunc
-    | funcDef
-    | arrayLiteral
-    | OPAREN expr CPAREN                                        // parenthesized expression
-    | unaryOpExpr
-    | expr OPAREN optArgList CPAREN                             // function call
-    | expr OPAREN optArgList CPAREN OBRACE optExprList CBRACE   // higher order function call
-    | expr OSQBRACE expr CSQBRACE                               // array access
-    | expr OPERATOR expr                                        // binary operator expression
-    | expr EQUALS expr
+expr: expr2 AND expr
+    | expr2 OR expr
+    | expr2 XOR expr
+    | expr2 metaExpr
+    | expr2
 
-// after removing left recursion
-expr: primary metaExpr
-    | ifExpr metaExpr
-    | whileExpr metaExpr
-    | varDecl metaExpr
-    | anonFunc metaExpr
-    | funcDef metaExpr
-    | arrayLiteral metaExpr
-    | OPAREN expr CPAREN metaExpr
-    | unaryOpExpr
+expr2: expr3 DOUBLE_EQUAL expr2
+     | expr3 NEQ expr2
+     | expr3 GREATER_THAN expr2
+     | expr3 LESS_THAN expr2
+     | expr3 LEQ expr2
+     | expr3 GEQ expr2
+     | expr3 TRIPLE_EQUAL expr2
+     | expr3 NOT_TRIPLE_EQUAL expr2
+     | expr3
 
-metaExpr: DOT IDENTIFIER metaExpr
-        | OPAREN optArgList CPAREN metaExpr
-        | OPAREN optArgList CPAREN OBRACE optExprList CBRACE metaExpr
-        | OSQBRACE expr CSQBRACE metaExpr
-        | operator expr
-        | EQUALS expr
-        | EPSILON
+expr3: expr4 PLUS expr4
+     | expr4 MINUS expr4
+     | expr4
+
+expr4: expr5 TIMES expr4
+     | expr5 DIVIDE expr4
+     | expr5
+
+expr5: expr6 BITWISE_AND expr5
+     | expr6 BITWISE_OR expr5
+     | expr6 BITWISE_XOR expr5
+
+expr6: expr7 EQUALS expr6
+     | expr7 PLUS_EQUALS expr6
+     | expr7 MINUS_EQUALS expr6
+     | expr7
+
+expr7: expr8 OPAREN optArgList CPAREN
+     | expr8 OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+     | expr8 OSQBRACE expr CSQBRACE
+     | expr8
+
+expr8: expr9 DOT IDENTIFIER
+     | expr9
+
+expr9: primary
+     | ifExpr
+     | whileExpr
+     | anonFunc
+     | funcDef
+     | varDecl
+     | arrayLiteral
+     | OPAREN expr CPAREN
+     | unaryOpExpr
 
 unaryOpExpr: RETURN expr
            | NOT expr
