@@ -30,15 +30,13 @@ let Wire = def() {
 let AndGate = def(in1, in2, out) {
     let delay = 4
     let action = def() {
-        println("Adding an 'and' gate. (", pq.peek_time(), ")") 
+        # println("Adding an 'and' gate. (", pq.peek_time(), ")") 
         pq.insert(delay, def() {
             let inv1 = in1.get_signal() 
             let inv2 = in2.get_signal()
             if ((inv1 == 1) and (inv2 == 1)) {
-                # println(inv1, " & ", inv2, " = 1")
                 out.set_signal(1)
             } else {
-                # println(inv1, " & ", inv2, " = 0")
                 out.set_signal(0)
             }
         })       
@@ -52,7 +50,7 @@ let AndGate = def(in1, in2, out) {
 let OrGate = def(in1, in2, out) {
     let delay = 4
     let action = def() {
-        println("Adding an 'or' gate. (", pq.peek_time(), ")") 
+        # println("Adding an 'or' gate. (", pq.peek_time(), ")") 
         pq.insert(delay, def() {
             let inv1 = in1.get_signal() 
             let inv2 = in2.get_signal()
@@ -71,7 +69,7 @@ let OrGate = def(in1, in2, out) {
 let XorGate = def(in1, in2, out) {
     let delay = 4
     let action = def() {
-        println("Adding a 'xor' gate. (", pq.peek_time(), ")") 
+        # println("Adding a 'xor' gate. (", pq.peek_time(), ")") 
         pq.insert(delay, def() {
             let inv1 = in1.get_signal() 
             let inv2 = in2.get_signal()
@@ -90,7 +88,7 @@ let XorGate = def(in1, in2, out) {
 let connect = def(in, out) {
     let delay = 1
     let action = def() {
-        println("Adding a connector! (", pq.peek_time(), ")")
+        # println("Adding a connector! (", pq.peek_time(), ")")
         pq.insert(delay, def() {
             out.set_signal(in.get_signal()) 
         })
@@ -106,7 +104,7 @@ let Adder = def(in1, in2, out, cin, cout) {
     let wire2 = new Wire()
     let and1 = new AndGate(cin, wire1, wire2)
     let wire3 = new Wire()
-    let and2 = new AndGate(in1, in1, wire3) 
+    let and2 = new AndGate(in1, in2, wire3) 
     let or1 = new OrGate(wire2, wire3, cout)
 }
 
@@ -117,14 +115,15 @@ let probe = def(w, name) {
     w.add_action(action)
 }
 
-let x = new Wire()
-probe(x, "x")
-let y = new Wire()
-probe(y, "y")
-let out = new Wire()
+let in1  = new Wire()
+let in2  = new Wire()
+let out  = new Wire()
 probe(out, "out")
-x.set_signal(1)
-y.set_signal(1)
-AndGate(x, y, out)
+let cin  = new Wire()
+let cout  = new Wire()
+probe(cout, "cout")
+let adder = new Adder(in1, in2, out, cin, cout)
+in1.set_signal(0)
+in2.set_signal(0)
 
 pq.go()
