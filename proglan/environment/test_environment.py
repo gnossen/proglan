@@ -53,3 +53,18 @@ def test_example18(capsys):
     out, err = capsys.readouterr()
     assert err == ""
     assert out == "Meow!\nGarfield\nSeymour\n"
+
+def test_wires(capsys):
+    env = Environment(file="../../examples/wire-test.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "1 + 1 = 10\n1 + 0 = 01\n0 + 1 = 01\n0 + 0 = 00\n"
+
+
+def test_dictionary(capsys):
+    env = Environment(file="../../examples/dictionary-test.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "Two is: 2\nFour is: 4\nSeven is: 7\n"

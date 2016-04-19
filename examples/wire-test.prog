@@ -4,6 +4,6 @@ import("wire.prog")
 # result is printed to STDOUT
 
 add_bits(1, 1)
-# add_bits(1, 0)
-# add_bits(0, 1)
-# add_bits(0, 0)
+add_bits(1, 0)
+add_bits(0, 1)
+add_bits(0, 0)
