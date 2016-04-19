@@ -55,3 +55,19 @@ def for(A)(body: elem) {
 
     res
 }
+
+def prepend(a, A) {
+    cons(a, A)
+}
+
+def append(a, A) {
+    def _iter(sublist) {
+        if (sublist === null) {
+            a
+        } else {
+            cons(car(sublist), _iter(cdr(sublist)))
+        }
+    }
+
+    _iter(A)
+}

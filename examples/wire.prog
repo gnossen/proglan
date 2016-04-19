@@ -1,0 +1,130 @@
+import("priority-queue.prog")
+import("stdlib.prog")
+
+let pq = new PQ()
+
+let run_all = def(items) {
+    for(items) {
+        elem()
+    }
+}
+
+let Wire = def() {
+    let signal = 0
+    let endpoints = null
+
+    let get_signal = def() { signal }
+    let set_signal = def(v) {
+        if (v != get_signal()) {
+            signal = v
+            run_all(endpoints)
+        }
+    }
+
+    let add_action = def(f) {
+        endpoints = prepend(f, endpoints) 
+        f()
+    }
+}
+
+let AndGate = def(in1, in2, out) {
+    let delay = 4
+    let action = def() {
+        println("Adding an 'and' gate. (", pq.peek_time(), ")") 
+        pq.insert(delay, def() {
+            let inv1 = in1.get_signal() 
+            let inv2 = in2.get_signal()
+            if ((inv1 == 1) and (inv2 == 1)) {
+                # println(inv1, " & ", inv2, " = 1")
+                out.set_signal(1)
+            } else {
+                # println(inv1, " & ", inv2, " = 0")
+                out.set_signal(0)
+            }
+        })       
+    }
+
+    in1.add_action(action)
+    in2.add_action(action)
+}
+
+
+let OrGate = def(in1, in2, out) {
+    let delay = 4
+    let action = def() {
+        println("Adding an 'or' gate. (", pq.peek_time(), ")") 
+        pq.insert(delay, def() {
+            let inv1 = in1.get_signal() 
+            let inv2 = in2.get_signal()
+            if ((inv1 == 1) or (inv2 == 1)) {
+                out.set_signal(1)
+            } else {
+                out.set_signal(0)
+            }
+        })       
+    }
+
+    in1.add_action(action)
+    in2.add_action(action)
+}
+
+let XorGate = def(in1, in2, out) {
+    let delay = 4
+    let action = def() {
+        println("Adding a 'xor' gate. (", pq.peek_time(), ")") 
+        pq.insert(delay, def() {
+            let inv1 = in1.get_signal() 
+            let inv2 = in2.get_signal()
+            if ((inv1 == 1) xor (inv2 == 1)) {
+                out.set_signal(1)
+            } else {
+                out.set_signal(0)
+            }
+        })       
+    }
+
+    in1.add_action(action)
+    in2.add_action(action)
+}
+
+let connect = def(in, out) {
+    let delay = 1
+    let action = def() {
+        println("Adding a connector! (", pq.peek_time(), ")")
+        pq.insert(delay, def() {
+            out.set_signal(in.get_signal()) 
+        })
+    }
+
+    in.add_action(action)
+}
+
+let Adder = def(in1, in2, out, cin, cout) {
+    let wire1 = new Wire()
+    let xor1 = new XorGate(in1, in2, wire1)
+    let xor2 = new XorGate(wire1, cin, out)
+    let wire2 = new Wire()
+    let and1 = new AndGate(cin, wire1, wire2)
+    let wire3 = new Wire()
+    let and2 = new AndGate(in1, in1, wire3) 
+    let or1 = new OrGate(wire2, wire3, cout)
+}
+
+let probe = def(w, name) {
+    let action = def() {
+        println(pq.peek_time(), ": Wire ", name, " changed to ", w.get_signal())
+    }
+    w.add_action(action)
+}
+
+let x = new Wire()
+probe(x, "x")
+let y = new Wire()
+probe(y, "y")
+let out = new Wire()
+probe(out, "out")
+x.set_signal(1)
+y.set_signal(1)
+AndGate(x, y, out)
+
+pq.go()

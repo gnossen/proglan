@@ -123,7 +123,8 @@ class Parser:
                 self.arrayLiteral_pending() or \
                 self.check(Lexeme.OPAREN) or \
                 self.check(Lexeme.RETURN) or \
-                self.check(Lexeme.NOT)
+                self.check(Lexeme.NOT) or \
+                self.check(Lexeme.NEW)
 
     def parse_expr(self):
         if self.primary_pending():

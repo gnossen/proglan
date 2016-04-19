@@ -5,8 +5,6 @@ from ..printer.printer import *
 import time
 import sys
 
-sys.setrecursionlimit(1500)
-
 class Environment:
     def __init__(self, input=None, file=None):
         self.env = self.create_env()

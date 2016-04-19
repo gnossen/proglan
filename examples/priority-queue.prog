@@ -1,0 +1,53 @@
+def PQ() {
+    let Event = def(time, func) {
+        this.time = time
+        this.func = func
+    }
+
+    let events = null
+    let clock = 0
+
+    let insert = def(skip, f) {
+        let new_time = clock + skip
+        let new_event = new Event(new_time, f)
+        let _iter = def(items) {
+            if (items === null) {
+                cons(new_event, null)
+            } else if (new_time < car(events).time) {
+                cons(new_event, _iter(cdr(items))) 
+            } else {
+                cons(car(items), _iter(cdr(items)))
+            }
+        }
+
+        events = _iter(events)
+    }
+
+    let go = def() {
+        if (events === null) {
+            true
+        } else {
+            let event = car(events)
+            events = cdr(events)
+            clock = event.time
+            event.func()
+            go()
+        }
+    }
+
+    let peek_time = def() {
+        if (events === null) {
+            0
+        } else {
+            car(events).time
+        }
+    }
+
+    let peek_func = def() {
+        if (events == null) {
+            0
+        } else {
+            car(events).func
+        }
+    }
+}
