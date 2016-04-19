@@ -1,0 +1,4 @@
+if (true) {
+    println(2)
+} else if (5) {
+    println(3)

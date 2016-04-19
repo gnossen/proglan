@@ -1,0 +1,15 @@
+def fib(n) {
+    # returns a list of the first n fibbonacci numbers
+    def _iter(i, cur, prev) {
+        if (i == n) {
+            null
+        } else {
+            let next = cur + prev
+            cons(next, _iter(i + 1, next, cur))
+        }
+    }
+
+    _iter(0, 0, 1)
+}
+
+println(fib(10))

@@ -15,7 +15,7 @@ if len(sys.argv) < 2:
             print(str(env.evaluate()))
         except Exception as e:
             print("Exception: " + str(e))
-            traceback.print_exc()
+            # traceback.print_exc()
 else:
     filepath = os.path.abspath(sys.argv[1])
 
@@ -25,5 +25,5 @@ else:
     except Exception as e:
         # traceback.print_exc()
         print("Exception: " + str(e))
-        type, value, tb = sys.exc_info()
-        pdb.post_mortem(tb)
+        # type, value, tb = sys.exc_info()
+        # pdb.post_mortem(tb)

@@ -1,0 +1,8 @@
+import("stdlib.prog")
+
+let f = def(x) { x * 2 }
+let a = range(0, 10)
+
+println(a)
+a = map(f, a)
+println(a)

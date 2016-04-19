@@ -1,0 +1,6 @@
+let a = 5
+if (a == 5) {
+    println("Yup, a is definitely five, guys.")
+} else {
+    println("I can't tell. Shine the flashlight a little to the left.")
+}
