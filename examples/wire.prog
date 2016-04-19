@@ -115,15 +115,16 @@ let probe = def(w, name) {
     w.add_action(action)
 }
 
-let in1  = new Wire()
-let in2  = new Wire()
-let out  = new Wire()
-probe(out, "out")
-let cin  = new Wire()
-let cout  = new Wire()
-probe(cout, "cout")
-let adder = new Adder(in1, in2, out, cin, cout)
-in1.set_signal(0)
-in2.set_signal(0)
+let add_bits = def(a, b) {
+    let in1  = new Wire()
+    let in2  = new Wire()
+    let out  = new Wire()
+    let cin  = new Wire()
+    let cout  = new Wire()
+    let adder = new Adder(in1, in2, out, cin, cout)
+    in1.set_signal(a)
+    in2.set_signal(b)
+    pq.go()
 
-pq.go()
+    println(a, " + ", b, " = ", cout.get_signal(), out.get_signal())
+}
