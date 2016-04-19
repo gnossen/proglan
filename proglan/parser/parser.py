@@ -124,9 +124,37 @@ class Parser:
         return a
 
     def expr_pending(self):
-        return self.expr2_pending()
+        return self.expr1_pending() or self.check(Lexeme.LET)
 
     def parse_expr(self):
+        if self.check(Lexeme.LET):
+            self.match(Lexeme.LET)
+            var_name = self.match(Lexeme.IDENTIFIER)
+
+            self.match(Lexeme.EQUAL)
+            val = self.parse_expr1()
+            return make_varDecl(var_name, val)
+
+        expr = self.parse_expr1()
+        if self.check(Lexeme.EQUAL):
+            self.match(Lexeme.EQUAL)
+            expr2 = self.parse_expr()
+            return make_varAssign(expr, expr2)
+        elif self.check(Lexeme.PLUS_EQUAL):
+            self.match(Lexeme.PLUS_EQUAL)
+            expr2 = self.parse_expr()
+            return make_primExpr(expr, Lexeme(Lexeme.PLUS_EQUAL), expr2)
+        elif self.check(Lexeme.MINUS_EQUAL):
+            self.match(Lexeme.MINUS_EQUAL)
+            expr2 = self.parse_expr()
+            return make_primExpr(expr, Lexeme(Lexeme.MINUS_EQUAL), expr2)
+        else:
+            return expr
+
+    def expr1_pending(self):
+        return self.expr2_pending()
+
+    def parse_expr1(self):
         level1_ops = [Lexeme.AND, Lexeme.OR, Lexeme.XOR]
         return self.parse_binop_level(Parser.parse_expr2, level1_ops)
 
@@ -163,58 +191,48 @@ class Parser:
         return self.expr7_pending()
 
     def parse_expr6(self):
-        level6_ops = [Lexeme.EQUAL, Lexeme.PLUS_EQUAL, Lexeme.MINUS_EQUAL]
-        return self.parse_binop_level(Parser.parse_expr7, level6_ops)
+        expr = self.parse_expr7()
+        while self.check(Lexeme.OPAREN, skip=False) or \
+                self.check(Lexeme.OSQBRACE, skip=False) or \
+                self.check(Lexeme.DOT, skip=False):
+
+            if self.check(Lexeme.OPAREN, skip=False):
+                self.match(Lexeme.OPAREN)
+                args = self.parse_optArgList()
+                self.match(Lexeme.CPAREN)
+                
+                anon_arg = None
+                if self.check(Lexeme.OBRACE):
+                    self.match(Lexeme.OBRACE)
+                    anon_arg = self.parse_optExprList()
+                    self.match(Lexeme.CBRACE)
+
+                expr = make_funcCall(expr, args, anon_arg)
+
+            if self.check(Lexeme.OSQBRACE, skip=False):
+                self.match(Lexeme.OSQBRACE)
+                index_expr = self.parse_expr()
+                self.match(Lexeme.CSQBRACE)
+                expr = make_arrayAccess(expr, index_expr)
+
+            while self.check(Lexeme.DOT, skip=False):
+                self.match(Lexeme.DOT)
+                attr = self.match(Lexeme.IDENTIFIER)
+                expr = make_attribAccess(expr, attr)
+            
+        return expr
 
     def expr7_pending(self):
-        return self.expr8_pending()
-
-    def parse_expr7(self):
-        expr = self.parse_expr8()
-        if self.check(Lexeme.OPAREN, skip=False):
-            self.match(Lexeme.OPAREN)
-            args = self.parse_optArgList()
-            self.match(Lexeme.CPAREN)
-            
-            anon_arg = None
-            if self.check(Lexeme.OBRACE):
-                self.match(Lexeme.OBRACE)
-                anon_arg = self.parse_optExprList()
-                self.match(Lexeme.CBRACE)
-
-            return make_funcCall(expr, args, anon_arg)
-        elif self.check(Lexeme.OSQBRACE, skip=False):
-            self.match(Lexeme.OSQBRACE)
-            index_expr = self.parse_expr()
-            self.match(Lexeme.CSQBRACE)
-            return make_arrayAccess(expr, index_expr)
-        else:
-            return expr
-
-    def expr8_pending(self):
-        return self.expr9_pending()
-
-    def parse_expr8(self):
-        expr = self.parse_expr9() 
-        if self.check(Lexeme.DOT, skip=False):
-            self.match(Lexeme.DOT)
-            attr = self.match(Lexeme.IDENTIFIER)
-            return make_attribAccess(expr, attr)
-        else:
-            return expr
-
-    def expr9_pending(self):
         return self.primary_pending() or \
                 self.ifExpr_pending() or \
                 self.whileExpr_pending() or \
-                self.varDecl_pending() or \
                 self.anonFunc_pending() or \
                 self.funcDef_pending() or \
                 self.arrayLiteral_pending() or \
                 self.check(Lexeme.OPAREN) or \
                 self.unaryOpExpr_pending()
 
-    def parse_expr9(self):
+    def parse_expr7(self):
         if self.primary_pending():
             return self.parse_primary()
         if self.check(Lexeme.DEF):
@@ -227,8 +245,6 @@ class Parser:
             return self.parse_ifExpr()
         elif self.whileExpr_pending():
             return self.parse_whileExpr()
-        elif self.varDecl_pending():
-            return self.parse_varDecl()
         elif self.arrayLiteral_pending():
             return self.parse_arrayLiteral()
         elif self.unaryOpExpr_pending():
@@ -270,12 +286,9 @@ class Parser:
         self.match(Lexeme.LET)
         var_name = self.match(Lexeme.IDENTIFIER)
 
-        if self.check(Lexeme.EQUAL):
-            self.advance()
-            val = self.parse_expr()
-            return make_varDecl(var_name, val)
-        else:
-            return make_varDecl(var_name, None)
+        self.match(Lexeme.EQUAL)
+        val = self.parse_expr()
+        return make_varDecl(var_name, val)
 
     def ifExpr_pending(self):
         return self.check(Lexeme.IF)
@@ -417,69 +430,6 @@ class Parser:
             return self.match(Lexeme.NULL)
         else:
             return self.match(Lexeme.IDENTIFIER)
-
-    def operator_pending(self):
-        return self.check(Lexeme.PLUS) or \
-                self.check(Lexeme.MINUS) or \
-                self.check(Lexeme.TIMES) or \
-                self.check(Lexeme.DIVIDE) or \
-                self.check(Lexeme.DOUBLE_EQUAL) or \
-                self.check(Lexeme.GREATER_THAN) or \
-                self.check(Lexeme.LESS_THAN) or \
-                self.check(Lexeme.AND) or \
-                self.check(Lexeme.OR) or \
-                self.check(Lexeme.XOR) or \
-                self.check(Lexeme.BITWISE_AND) or \
-                self.check(Lexeme.BITWISE_OR) or \
-                self.check(Lexeme.BITWISE_XOR) or \
-                self.check(Lexeme.LEQ) or \
-                self.check(Lexeme.GEQ) or \
-                self.check(Lexeme.NEQ) or \
-                self.check(Lexeme.TRIPLE_EQ) or \
-                self.check(Lexeme.NOT_TRIPLE_EQ)
-
-    def parse_operator(self):
-        if self.check(Lexeme.PLUS):
-            return self.match(Lexeme.PLUS)
-        elif self.check(Lexeme.MINUS):
-            return self.match(Lexeme.MINUS)
-        elif self.check(Lexeme.TIMES):
-            return self.match(Lexeme.TIMES)
-        elif self.check(Lexeme.DIVIDE):
-            return self.match(Lexeme.DIVIDE)
-        elif self.check(Lexeme.DOUBLE_EQUAL):
-            return self.match(Lexeme.DOUBLE_EQUAL)
-        elif self.check(Lexeme.GREATER_THAN):
-            return self.match(Lexeme.GREATER_THAN)
-        elif self.check(Lexeme.LESS_THAN):
-            return self.match(Lexeme.LESS_THAN)
-        elif self.check(Lexeme.AND):
-            return self.match(Lexeme.AND)
-        elif self.check(Lexeme.OR):
-            return self.match(Lexeme.OR)
-        elif self.check(Lexeme.XOR):
-            return self.match(Lexeme.XOR)
-        elif self.check(Lexeme.BITWISE_AND):
-            return self.match(Lexeme.BITWISE_AND)
-        elif self.check(Lexeme.BITWISE_OR):
-            return self.match(Lexeme.BITWISE_OR)
-        elif self.check(Lexeme.BITWISE_XOR):
-            return self.match(Lexeme.BITWISE_XOR)
-        elif self.check(Lexeme.LEQ):
-            return self.match(Lexeme.LEQ)
-        elif self.check(Lexeme.GEQ):
-            return self.match(Lexeme.GEQ)
-        elif self.check(Lexeme.NEQ):
-            return self.match(Lexeme.NEQ)
-        elif self.check(Lexeme.TRIPLE_EQ):
-            return self.match(Lexeme.TRIPLE_EQ)
-        else:
-            return self.match(Lexeme.NOT_TRIPLE_EQ)
-
-    def parse_varAssign(self, identifier):
-        self.match(Lexeme.EQUAL)
-        val = self.parse_expr()
-        return make_varAssign(identifier, val)
 
     def parse_optArgList(self):
         if self.argList_pending():

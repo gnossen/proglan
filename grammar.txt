@@ -1,7 +1,6 @@
 expr: expr2 AND expr
     | expr2 OR expr
     | expr2 XOR expr
-    | expr2 metaExpr
     | expr2
 
 expr2: expr3 DOUBLE_EQUAL expr2
