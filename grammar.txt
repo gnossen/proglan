@@ -103,24 +103,5 @@ primary : NUMBER
         | NULL
         | IDENTIFIER 
 
-operator : PLUS
-         | MINUS
-         | TIMES
-         | DIVIDE
-         | AND
-         | OR
-         | XOR
-         | BIT_AND
-         | BIT_OR
-         | BIT_XOR
-         | DOUBLE_EQUAL
-         | GREATER_THAN
-         | LESS_THAN
-         | LEQ
-         | GEQ
-         | NEQ
-         | TRIPLE_EQUAL
-         | NOT_TRIPLE_EQUAL
-
 anonFunc : DEF OPAREN optParamList CPAREN OBRACE optExpressionList CBRACE
          | DEF OPAREN optParamList CPAREN funcParam OBRACE optExprList CBRACE
