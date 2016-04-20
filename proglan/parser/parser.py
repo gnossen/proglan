@@ -143,11 +143,11 @@ class Parser:
         elif self.check(Lexeme.PLUS_EQUAL):
             self.match(Lexeme.PLUS_EQUAL)
             expr2 = self.parse_expr()
-            return make_primExpr(expr, Lexeme(Lexeme.PLUS_EQUAL), expr2)
+            return make_plusEqualExpr(expr, expr2)
         elif self.check(Lexeme.MINUS_EQUAL):
             self.match(Lexeme.MINUS_EQUAL)
             expr2 = self.parse_expr()
-            return make_primExpr(expr, Lexeme(Lexeme.MINUS_EQUAL), expr2)
+            return make_minusEqualExpr(expr, expr2)
         else:
             return expr
 
@@ -519,3 +519,10 @@ def make_newExpr(expr):
 
 def make_minusExpr(expr):
     return Lexeme(Lexeme.minusExpr, left=expr)
+
+def make_plusEqualExpr(lval, incr):
+    return Lexeme(Lexeme.plusEqualExpr, left=lval, right=incr)
+
+def make_minusEqualExpr(lval, incr):
+    return Lexeme(Lexeme.minusEqualExpr, left=lval, right=incr)
+

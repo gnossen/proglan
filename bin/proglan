@@ -25,5 +25,5 @@ else:
     except Exception as e:
         # traceback.print_exc()
         print("Exception: " + str(e))
-        # type, value, tb = sys.exc_info()
-        # pdb.post_mortem(tb)
+        type, value, tb = sys.exc_info()
+        pdb.post_mortem(tb)

@@ -57,13 +57,13 @@ class Lexer:
         elif ch == "+":
             if self.peek() == "=":
                 self.advance()
-                return Lexeme(Lexeme.PLUS_EQUALS, line=self.line, col=self.col - 2)
+                return Lexeme(Lexeme.PLUS_EQUAL, line=self.line, col=self.col - 2)
             else:
                 return Lexeme(Lexeme.PLUS, line=self.line, col=self.col - 1)
         elif ch == "-":
             if self.peek() == "=":
                 self.advance()
-                return Lexeme(Lexeme.MINUS_EQUALS, line=self.line, col=self.col - 2)
+                return Lexeme(Lexeme.MINUS_EQUAL, line=self.line, col=self.col - 2)
             else:
                 return Lexeme(Lexeme.MINUS, line=self.line, col=self.col - 1)
         elif ch == "*":

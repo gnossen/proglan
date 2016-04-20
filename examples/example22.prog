@@ -1,0 +1,6 @@
+let a = 3
+println(a)
+a += 2
+println(a)
+a -= 3
+println(a)

@@ -32,13 +32,13 @@ expr5: expr6 BITWISE_AND expr5
      | expr6 BITWISE_XOR expr5
      | expr6
 
-expr7: expr8 OPAREN optArgList CPAREN
+expr6: expr8 OPAREN optArgList CPAREN
      | expr8 OPAREN optArgList CPAREN OBRACE optExprList CBRACE
      | expr8 DOT IDENTIFIER
      | expr8 OSQBRACE expr CSQBRACE
      | expr8
 
-expr8: primary
+expr7: primary
      | ifExpr
      | whileExpr
      | anonFunc

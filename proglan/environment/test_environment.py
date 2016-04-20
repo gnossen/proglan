@@ -68,3 +68,10 @@ def test_dictionary(capsys):
     out, err = capsys.readouterr()
     assert err == ""
     assert out == "Two is: 2\nFour is: 4\nSeven is: 7\n"
+
+def test_example22(capsys):
+    env = Environment(file="../../examples/example22.prog")
+    env.evaluate()
+    out, err = capsys.readouterr()
+    assert err == ""
+    assert out == "3\n5\n2\n"

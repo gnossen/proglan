@@ -334,6 +334,10 @@ class Environment:
             return pt
         elif pt.type == Lexeme.builtIn:
             return pt
+        elif pt.type == Lexeme.plusEqualExpr:
+            return self.evalPlusEqualExpr(pt, env)
+        elif pt.type == Lexeme.minusEqualExpr:
+            return self.evalMinusEqualExpr(pt, env)
         else:
             raise Exception("Cannot evaluate %s" % str(pt))
 
@@ -795,6 +799,20 @@ class Environment:
             raise Exception("Attempted to access attribute of NULL object. %s" % str(pt.left))
 
         return self.lookup(attr, obj)
+    
+    def evalPlusEqualExpr(self, pt, env):
+        incr = self.eval(pt.right, env)
+        gen_purp = Lexeme(Lexeme.gen_purp, left=Lexeme(Lexeme.PLUS), right=pt.right)
+        plus_expr = Lexeme(Lexeme.primExpr, left=pt.left, right=gen_purp)
+        new_ast = Lexeme(Lexeme.varAssign, left=pt.left, right=plus_expr)
+        return self.eval(new_ast, env)
+
+    def evalMinusEqualExpr(self, pt, env):
+        incr = self.eval(pt.right, env)
+        gen_purp = Lexeme(Lexeme.gen_purp, left=Lexeme(Lexeme.MINUS), right=pt.right)
+        plus_expr = Lexeme(Lexeme.primExpr, left=pt.left, right=gen_purp)
+        new_ast = Lexeme(Lexeme.varAssign, left=pt.left, right=plus_expr)
+        return self.eval(new_ast, env)
 
     def make_function(self, param_list, func_param, body, env):
         join2 = Lexeme(Lexeme.gen_purp, left=body, right=env)
