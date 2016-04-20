@@ -19,8 +19,8 @@ expr2: expr3 DOUBLE_EQUAL expr2
      | expr3 NOT_TRIPLE_EQUAL expr2
      | expr3
 
-expr3: expr4 PLUS expr4
-     | expr4 MINUS expr4
+expr3: expr4 PLUS expr3
+     | expr4 MINUS expr3
      | expr4
 
 expr4: expr5 TIMES expr4

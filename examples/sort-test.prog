@@ -1,0 +1,4 @@
+import("stdlib.prog")
+
+println(sort([32, 3, 234, 5]) { a > b })
+println(sort(["Hola", "Hello", "Hi", "Aloha"]) { len(a) < len(b) })
