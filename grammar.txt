@@ -1,7 +1,13 @@
-expr: expr2 AND expr
-    | expr2 OR expr
-    | expr2 XOR expr
-    | expr2
+expr: LET expr1 EQUAL expr1
+    | expr1 EQUAL expr1
+    | expr1 PLUS_EQUAL expr1
+    | expr1 MINUS_EQUAL expr1
+    | expr1
+
+expr1: expr2 AND expr1
+     | expr2 OR expr1
+     | expr2 XOR expr1
+     | expr2
 
 expr2: expr3 DOUBLE_EQUAL expr2
      | expr3 NEQ expr2
@@ -24,26 +30,19 @@ expr4: expr5 TIMES expr4
 expr5: expr6 BITWISE_AND expr5
      | expr6 BITWISE_OR expr5
      | expr6 BITWISE_XOR expr5
-
-expr6: expr7 EQUALS expr6
-     | expr7 PLUS_EQUALS expr6
-     | expr7 MINUS_EQUALS expr6
-     | expr7
+     | expr6
 
 expr7: expr8 OPAREN optArgList CPAREN
      | expr8 OPAREN optArgList CPAREN OBRACE optExprList CBRACE
+     | expr8 DOT IDENTIFIER
      | expr8 OSQBRACE expr CSQBRACE
      | expr8
 
-expr8: expr9 DOT IDENTIFIER
-     | expr9
-
-expr9: primary
+expr8: primary
      | ifExpr
      | whileExpr
      | anonFunc
      | funcDef
-     | varDecl
      | arrayLiteral
      | OPAREN expr CPAREN
      | unaryOpExpr
